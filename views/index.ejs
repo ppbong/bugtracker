@@ -1,11 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= title %></title>
+    <link rel="shortcut icon" href="/images/favicon.ico">
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/index.css' />
+    <script src="/javascripts/axios.min.js"></script>
+    <script src="/javascripts/index.js"></script>
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+      <div class="container">
+        <h1>Welcome to <span><%= title %></span></h1>
+        <div>
+          <!-- <label for="username">*</label> -->
+          <input type="text" id='u' name="username" placeholder="用户名">
+        </div>
+        <div>
+          <!-- <label for="password">*</label> -->
+          <input type="password" id='p' name="password" placeholder="口令">
+        </div>
+        <button onclick="login()">登录</button>
+        <div id='msg'></div>
+      </div>
   </body>
 </html>

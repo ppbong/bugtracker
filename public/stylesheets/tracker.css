@@ -1,0 +1,9 @@
+.nav {
+	width: 100%;
+	border-bottom: 2px solid #E6E8EB;
+}
+
+.nav h1 {
+	display: inline;
+}
+

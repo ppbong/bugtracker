@@ -1,0 +1,61 @@
+.container {
+	width: 400px;
+	margin: 0 auto;
+	text-align: center;
+	background-color: #ecf5ff;
+	padding: 45px;
+	user-select: none;
+}
+
+.container div {
+	margin: 15px 0px;
+	width: 100%;
+}
+
+label {
+	color: red;
+	margin: 2px 5px;
+}
+
+input {
+	text-align: center;
+	padding: 2px;
+	border: 0;
+	border-bottom: 1px solid #909399;
+	/*去掉输入时的黑边框*/
+	outline: none; 
+}
+
+/*取得光标时隐藏占位提示*/
+input:focus::placeholder {
+	opacity: 0;
+}
+
+input:focus {
+	border-top-width: 0;
+	border-left-width: 0;
+	border-right-width: 0;
+}
+
+button {
+	background-color: #409EFF;
+	color: white;
+	border-width: 0;
+	padding: 2px 15px;
+}
+
+button:hover {
+	background-color: #79bbff;
+}
+
+span {
+	color: #F56C6C;
+}
+
+span.success {
+	color: #67C23A;
+}
+
+span.danger {
+	color: #F56C6C;
+}
