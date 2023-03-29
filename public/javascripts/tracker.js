@@ -1,271 +1,233 @@
-var DICT = {}
-
-window.onload = () => {
-	if (DICT.product === undefined) {
-		axios.get('/dicts/product').then((res) => {
+// 获取选项
+const getOptions = () => {
+	return new Promise((resolve,reject) => {
+		axios.get('/dicts').then((res) => {
 			console.log(res.data)
-			DICT.product = res.data
+			resolve(res.data)
 		})
-	}
-
-	if (DICT.leader === undefined) {
-		axios.get('/users').then((res) => {
-			console.log(res.data)
-			DICT.leader = res.data
-		})
-	}
-
-	if (DICT.level === undefined) {
-		axios.get('/dicts/level').then((res) => {
-			console.log(res.data)
-			DICT.level = res.data
-		})
-	}
-
-	if (DICT.status === undefined) {
-		axios.get('/dicts/status').then((res) => {
-			console.log(res.data)
-			DICT.status = res.data
-		})
-	}
-
-	if (DICT.result === undefined) {
-		axios.get('/dicts/result').then((res) => {
-			console.log(res.data)
-			DICT.result = res.data
-		})
-	}
+	})
 }
 
-// const HeadLabel = ['序号','日期','产品','问题','描述','参考','执行','等级','状态','结果','备注']
-// var TableData = []
+// 获取数据
+const getTrackerData = () => {
+	return new Promise((resolve,reject) => {
+		axios.get('/tracker/list').then((res) => {
+			console.log(res.data)
+			resolve(res.data)
+		})
+	})
+}
 
-// function createTableHead() {
-// 	const trackerTableHead = document.getElementById('trackerTableHead')
-// 	trackerTableHead.innerHTML = ''
+// 获取权限
+const getPermission = (user) => {
+	return new Promise((resolve,reject) => {
+		axios.get('/permission/' + user).then((res) => {
+			console.log(res.data)
+			resolve(res.data)
+		})
+	})
+}
 
-// 	var tr = document.createElement('tr')
-// 	HeadLabel.forEach((e,i,a) => {
-// 		var th = document.createElement('th')
-// 		th.innerText = e
-// 		tr.appendChild(th)
-// 	})
+// 创建选项元素
+const createSelectElement = (dict, type, value) => {
+	var element = document.createElement('select')
+	element.name = type
+	element.className = value
 
-// 	trackerTableHead.appendChild(tr)
-// }
+	var options = type === 'product'
+	? dict.product
+	: type === 'level'
+	? dict.level
+	: type === 'status'
+	? dict.status
+	: type === 'result'
+	? dict.result
+	: type === 'leader'
+	? dict.leader
+	: undefined
 
-// function createTableBody() {
-// 	const trackerTableBody = document.getElementById('trackerTableBody')
-// 	trackerTableBody.innerHTML = ''
+	if (options === undefined) return element
 
-// 	axios.get('/bug-tracker/list').then((res) => {
-// 		console.log(res.data)
+	options.forEach((e) => {
+		var option = document.createElement('option')
+		option.value = e.value
+		option.innerText = e.label
+		option.selected = e.value === value ? true : false
+		element.appendChild(option)
+	})
 
-// 		TableData = res.data || []
-// 		TableData.forEach((e,i,a) => {
-// 			var path = e.date.replaceAll('/','')
-// 			var refers = e.refer.split('#') /*多个文件以#分隔*/
+	element.addEventListener('change', (event) => {
+		event.target.className = event.target.value
+		handleSelectChange(event.target)
+	});
 
-// 			var referHtml = []
-// 			refers.forEach((e,i) => {
-// 				if(e && e.length>0) { referHtml.push('<a href="' + path + '/' + e + '" target="_blank">' + (i+1) + '</a>') }
-// 			});
+	return element;
+}
 
-// 			var tr = document.createElement('tr')
-// 			tr.id = e.seq
-// 			tr.className = e.result==='done'?'success':e.result==='close'?'info':e.level==='2'?'danger':e.level==='1'?'warn':'primary'
+const handleSelectChange = (node) => {
+	// tr-td-select
+	var line = node.parentNode.parentNode
+	var selects = line.querySelectorAll('select')
 
-// 			// 序号
-// 			var td1 = document.createElement('td')
-// 			td1.width = 60
-// 			td1.innerText = i+1
-// 			tr.appendChild(td1)
+	var level = ''
+	var status = ''
+	var result = ''
 
-// 			// 日期
-// 			var td2 = document.createElement('td')
-// 			td2.width = 100
-// 			td2.innerText = e.date
-// 			tr.appendChild(td2)
+	selects.forEach((e) => {
+		if (e.name === 'level') {
+			level = e.value
+		} else if (e.name === 'status') {
+			status = e.value
+		} else if (e.name === 'result') {
+			result = e.value
+		}
+	})
 
-// 			// 产品
-// 			var td3 = document.createElement('td')
-// 			td3.innerText = e.product
-// 			tr.appendChild(td3)
+	line.className = result==='done'?'success':result==='close'?'info':level==='high'?'danger':level==='medium'?'warn':'primary'
 
-// 			// 问题
-// 			var td4 = document.createElement('td')
-// 			td4.innerText = e.title
-// 			tr.appendChild(td4)
+	// update(line.id, level, status, result)
+}
 
-// 			// 描述
-// 			var td5 = document.createElement('td')
-// 			td5.innerText = e.info
-// 			tr.appendChild(td5)
+const createButtonGroup = () => {
+	var div = document.createElement('div')
+	var btnEdit = document.createElement('button')
+	var btnDelete = document.createElement('button')
 
-// 			// 参考
-// 			var td6 = document.createElement('td')
-// 			td6.innerHTML = referHtml.join('')
-// 			tr.appendChild(td6)
+	btnEdit.className = 'edit'
+	btnEdit.innerText = '编辑'
 
-// 			// 执行
-// 			var td7 = document.createElement('td')
-// 			td7.innerText = e.leader
-// 			tr.appendChild(td7)
+	btnEdit.addEventListener('click', (event) => {
+		let btn = event.target
+		if (btn.className === 'edit') {
+			btn.className = 'save'
+			btn.innerText = '保存'
+		} else {
+			btn.className = 'edit'
+			btn.innerText = '编辑'
+		}
+	})
 
-// 			// 级别
-// 			var td8 = document.createElement('td')
-// 			td8.innerText = e.level
-// 			tr.appendChild(td8)
+	btnDelete.className = 'delete'
+	btnDelete.innerText = '删除'
 
-// 			// 状态
-// 			var td9 = document.createElement('td')
-// 			td9.innerText = e.status
-// 			tr.appendChild(td9)
+	div.className = 'btnGroup'
+	div.appendChild(btnEdit)
+	div.appendChild(btnDelete)
 
-// 			// 结果
-// 			var tdA = document.createElement('td')
-// 			tdA.innerText = e.result
-// 			tr.appendChild(tdA)
+	return div
+}
 
-// 			// 备注
-// 			var tdB = document.createElement('td')
-// 			tdB.innerText = e.remark
-// 			tr.appendChild(tdB)
+// 渲染表格
+const showTrackerData = async () => {
+	const TrackerData = await getTrackerData()
+	const Options = await getOptions()
 
-// 			// 操作
-// 			var tdC = document.createElement('td')
-// 			tdC.appendChild(createOperatorGroup())
-// 			tr.appendChild(tdC)
+	var tbody = document.querySelector('tbody')
 
-// 			dataList.appendChild(tr)
-// 		})
-// 	})
-// }
+	TrackerData.forEach((e,i) => {
+		tr = document.createElement('tr')
+		tr.id = e.seq
+		tr.className = e.result==='done'?'success':e.result==='close'?'info':e.level==='high'?'danger':e.level==='medium'?'warn':'primary'
 
+		// 序号
+		td = document.createElement('td')
+		td.className = 'index'
+		td.innerText = i+1
+		tr.appendChild(td)
 
-// window.onload = () => {
-// 	getDataList()
-// }
+		// 日期
+		td = document.createElement('td')
+		td.className = 'date'
+		td.innerText = e.date
+		tr.appendChild(td)
 
-// function getDataList() {
-// 	const dataList = document.getElementById('dataList')
-// 	dataList.innerHTML = ''
+		// 产品
+		td = document.createElement('td')
+		td.className = 'product'
+		td.appendChild(createSelectElement(Options, 'product', e.product))
+		tr.appendChild(td)
 
-// 	axios.get('/bug-tracker/list').then((res) => {
-// 		console.log(res.data)
+		// 问题
+		td = document.createElement('td')
+		td.className = 'title'
+		td.innerText = e.title
+		tr.appendChild(td)
 
-// 		TableData = res.data || []
-// 		TableData.forEach((e,i,a) => {
-// 			var path = e.date.replaceAll('/','')
-// 			var refers = e.refer.split('#') /*多个文件以#分隔*/
+		// 描述
+		td = document.createElement('td')
+		td.className = 'info'
+		td.innerText = e.info
+		tr.appendChild(td)
 
-// 			var referHtml = []
-// 			refers.forEach((e,i) => {
-// 				if(e && e.length>0) { referHtml.push('<a href="' + path + '/' + e + '" target="_blank">' + (i+1) + '</a>') }
-// 			});
+		var path = e.date.replaceAll('/','')
+		var refers = e.refer.split('#') /*多个文件以#分隔*/
+		var html = []
+		refers.forEach((e,i) => {
+			if(e && e.length>0) {
+				html.push('<a href="' + path + '/' + e + '" target="_blank">' + (i+1) + '</a>')
+			}
+		});
 
-// 			var tr = document.createElement('tr')
-// 			tr.id = e.seq
-// 			tr.className = e.result==='done'?'success':e.result==='close'?'info':e.level==='2'?'danger':e.level==='1'?'warn':'primary'
+		// 参考
+		td = document.createElement('td')
+		td.className = 'refer'
+		td.innerHTML = html.join('')
+		tr.appendChild(td)
 
-// 			// 序号
-// 			var td1 = document.createElement('td')
-// 			td1.width = 60
-// 			td1.innerText = i+1
-// 			tr.appendChild(td1)
+		// 备注
+		td = document.createElement('td')
+		td.className = 'remark'
+		td.innerText = e.remark
+		tr.appendChild(td)
 
-// 			// 日期
-// 			var td2 = document.createElement('td')
-// 			td2.width = 100
-// 			td2.innerText = e.date
-// 			tr.appendChild(td2)
+		// 执行
+		td = document.createElement('td')
+		td.className = 'leader'
+		td.appendChild(createSelectElement(Options, 'leader', e.leader))
+		tr.appendChild(td)
 
-// 			// 产品
-// 			var td3 = document.createElement('td')
-// 			td3.innerText = e.product
-// 			tr.appendChild(td3)
+		// 级别
+		td = document.createElement('td')
+		td.className = 'level'
+		td.appendChild(createSelectElement(Options, 'level', e.level))
+		tr.appendChild(td)
 
-// 			// 问题
-// 			var td4 = document.createElement('td')
-// 			td4.innerText = e.title
-// 			tr.appendChild(td4)
+		// 状态
+		td = document.createElement('td')
+		td.className = 'status'
+		td.appendChild(createSelectElement(Options, 'status', e.status))
+		tr.appendChild(td)
 
-// 			// 描述
-// 			var td5 = document.createElement('td')
-// 			td5.innerText = e.info
-// 			tr.appendChild(td5)
+		// 结果
+		td = document.createElement('td')
+		td.className = 'result'
+		td.appendChild(createSelectElement(Options, 'result', e.result))
+		tr.appendChild(td)
 
-// 			// 参考
-// 			var td6 = document.createElement('td')
-// 			td6.innerHTML = referHtml.join('')
-// 			tr.appendChild(td6)
+		// 操作
+		td = document.createElement('td')
+		td.className = 'oper'
+		td.appendChild(createButtonGroup())
+		tr.appendChild(td)
 
-// 			// 执行
-// 			var td7 = document.createElement('td')
-// 			td7.innerText = e.leader
-// 			tr.appendChild(td7)
+		tbody.appendChild(tr)
+	});
+}
 
-// 			// 级别
-// 			var td8 = document.createElement('td')
-// 			td8.innerText = e.level
-// 			tr.appendChild(td8)
+const showNewButton = () => {
+	var div = document.createElement('div')
+	div.className = 'add'
+	var btn = document.createElement('button')
+	btn.className = 'add'
+	btn.innerText = '+ new Bug Tracker'
+	div.appendChild(btn)
+	document.getElementById('app').appendChild(div)
+}
 
-// 			// 状态
-// 			var td9 = document.createElement('td')
-// 			td9.innerText = e.status
-// 			tr.appendChild(td9)
-
-// 			// 结果
-// 			var tdA = document.createElement('td')
-// 			tdA.innerText = e.result
-// 			tr.appendChild(tdA)
-
-// 			// 备注
-// 			var tdB = document.createElement('td')
-// 			tdB.innerText = e.remark
-// 			tr.appendChild(tdB)
-
-// 			// 操作
-// 			var tdC = document.createElement('td')
-// 			tdC.appendChild(createOperatorGroup())
-// 			tr.appendChild(tdC)
-
-// 			dataList.appendChild(tr)
-// 		})
-// 	})
-// }
-
-// function createOperatorGroup() {
-// 	var div = document.createElement('div')
-// 	div.className = 'btnGroup'
-
-// 	var btnEdit = document.createElement('button')
-// 	btnEdit.value = 'edit'
-// 	btnEdit.innerText = '编辑'
-
-// 	btnEdit.addEventListener('click', (event) => {
-// 		var thisBtn = event.target
-
-// 		if (thisBtn.value === 'edit') {
-// 			thisBtn.value = 'save'
-// 			thisBtn.innerText = '保存'
-// 		} else {
-// 			thisBtn.value = 'edit'
-// 			thisBtn.innerText = '编辑'
-// 		}
-// 	})
-
-// 	div.appendChild(btnEdit)
-
-// 	var btnDelete = document.createElement('button')
-// 	btnDelete.value = 'delete'
-// 	btnDelete.innerText = '删除'
-
-// 	btnDelete.addEventListener('click', (event) => {
-// 		var thisBtn = event.target
-// 	})
-
-// 	div.appendChild(btnDelete)
-
-// 	return div
-// }
+window.onload = () => {
+	getOptions()
+	getTrackerData()
+	getPermission(document.getElementById('uid').innerText)
+	showTrackerData()
+	showNewButton()
+}

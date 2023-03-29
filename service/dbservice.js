@@ -109,8 +109,9 @@ const initializing = function() {
 		db.run(tracker_schema)
 		stmt = db.prepare(tracker_data)
 		// seq,date,product,title,info,refer,leader,level,status,result,remark
-		stmt.run(1,'2023/01/01','P1','T1','I1','R1','L1','L1','S1','R1','R1')
-		stmt.run(2,'2023/01/02','P2','T2','I2','R2','L2','L2','S2','R2','R2')
+		stmt.run(1,'2023/01/01','P1','T1','I1','R1','L1','high','fix','open','R1')
+		stmt.run(2,'2023/01/02','P2','T2','I2','R2','L2','medium','cover','done','R2')
+		stmt.run(3,'2023/01/03','P3','T3','I3','R3','L3','low','resovled','close','R2')
 		stmt.finalize()
 	})
 }()

@@ -4,28 +4,18 @@ var router = express.Router();
 const dbservice = require('../service/dbservice.js')
 
 /* GET dict. */
-router.get('/', function(req, res, next) {
-  next()
-});
+router.get('/', async function(req, res, next) {
+  const product = await dbservice.getProductList()
+  const level = await dbservice.getLevelList()
+  const status = await dbservice.getStatusList()
+  const result = await dbservice.getResultList()
+  const users = await dbservice.getUserList()
+  const leader = []
+  users.forEach(e => {
+    leader.push({value: e.username, label: e.cname})
+  });
 
-router.get('/product', async function(req, res, next) {
-  const rows = await dbservice.getProductList()
-  res.send(rows);
-});
-
-router.get('/level', async function(req, res, next) {
-  const rows = await dbservice.getLevelList()
-  res.send(rows);
-});
-
-router.get('/status', async function(req, res, next) {
-  const rows = await dbservice.getStatusList()
-  res.send(rows);
-});
-
-router.get('/result', async function(req, res, next) {
-  const rows = await dbservice.getResultList()
-  res.send(rows);
+  res.send({product, level, status, result, leader})
 });
 
 module.exports = router;

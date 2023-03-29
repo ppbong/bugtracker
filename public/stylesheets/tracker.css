@@ -1,9 +1,231 @@
+* {
+	color: #606266;
+	user-select: none;
+}
+
 .nav {
 	width: 100%;
 	border-bottom: 2px solid #E6E8EB;
+	margin-bottom: 5px;
 }
 
 .nav h1 {
 	display: inline;
 }
 
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0 auto;
+	text-align: left;
+}
+
+thead {
+	color: #606266;
+	border-bottom: 1px solid #606266;
+	user-select: none;
+}
+
+th,td {
+	padding: 5px 2px;
+}
+
+tbody tr:hover {
+	background-color: #F2F3F5;
+}
+
+tr.primary {
+	background-color: #409EFF;
+	background-color: #337ecc;
+	background-color: #79bbff;
+	background-color: #a0cfff;
+	background-color: #c6e2ff;
+	background-color: #d9ecff;
+	/*background-color: #ecf5ff;*/
+}
+
+tr.success {
+	background-color: #67C23A;
+	background-color: #529b2e;
+	background-color: #95d475;
+	background-color: #b3e19d;
+	background-color: #d1edc4;
+	background-color: #e1f3d8;
+	/*background-color: #f0f9eb;*/
+}
+
+tr.warn {
+	background-color: #E6A23C;
+	background-color: #b88230;
+	background-color: #eebe77;
+	background-color: #f3d19e;
+	background-color: #f8e3c5;
+	background-color: #faecd8;
+	/*background-color: #fdf6ec;*/
+}
+
+tr.danger {
+	background-color: #F56C6C;
+	background-color: #c45656;
+	background-color: #f89898;
+	background-color: #fab6b6;
+	background-color: #fcd3d3;
+	background-color: #fde2e2;
+	/*background-color: #fef0f0;*/
+}
+
+tr.info {
+	background-color: #909399;
+	background-color: #73767a;
+	background-color: #b1b3b8;
+	background-color: #c8c9cc;
+	background-color: #dedfe0;
+	background-color: #e9e9eb;
+	/*background-color: #f4f4f5;*/
+}
+
+select.high {
+	background-color: #F56C6C;
+	color: #FFF;
+}
+select.medium {
+	background-color: #E6A23C;
+	color: #FFF;
+}
+select.low {
+	background-color: #409EFF;
+	color: #FFF;
+}
+
+select.resolved {
+	background-color: #67C23A;
+	color: #FFF;
+}
+select.rejected {
+	background-color: #909399;
+	color: #FFF;
+}
+
+select.done {
+	background-color: #67C23A;
+	color: #FFF;
+}
+select.close {
+	background-color: #909399;
+	color: #FFF;
+}
+
+a {
+	margin-left: 5px;
+}
+
+button {
+	width: 200px;
+	border-width: 0;
+	color: #FFF;
+}
+
+button.primary {
+	background-color: #409EFF;
+}
+
+button.primary:hover {
+	background-color: #79bbff;
+}
+
+button.danger {
+	background-color: #F56C6C;
+}
+button.danger:hover {
+	background-color: #f89898;
+}
+
+div#newLine {
+	width: 100%;
+}
+
+div#newLine input {
+	margin-left: 15px;
+}
+
+div#newLine select {
+	margin-right: 15px;
+}
+
+div.btnGroup {
+	width: 80px;
+	display: inline-flex;
+}
+
+div.add {
+	margin: 15px auto;
+}
+
+button.add {
+	background-color: #409EFF;
+}
+
+button.edit {
+	background-color: #409EFF;
+}
+
+button.save {
+	background-color: #E6A23C;
+}
+
+button.delete {
+	background-color: #F56C6C;
+}
+
+button:hover {
+	opacity: 50%;
+}
+
+td.index {
+	width: 60px;
+}
+
+td.date {
+	width: 100px;
+}
+
+td.product {
+	width: 100px;
+}
+
+td.title {
+	max-width: 180px;
+	overflow: auto;
+}
+
+td.info {
+	color: blue;
+}
+
+td.refer {
+	max-width: 80px;
+}
+
+td.leader {
+	width: 80px;
+}
+
+td.level {
+	width: 60px;
+}
+
+td.status {
+	width: 80px;
+}
+
+td.result {
+	width: 80px;
+}
+
+td.remark {
+	max-width: 120px;
+}
+
+td.oper {
+	width: 80px;
+}
