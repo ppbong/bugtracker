@@ -15,6 +15,7 @@ router.get('/', async function(req, res, next) {
     leader.push({value: e.username, label: e.cname})
   });
 
+  // res.setHeader('Access-Control-Allow-Origin', '*')
   res.send({product, level, status, result, leader})
 });
 

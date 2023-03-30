@@ -217,9 +217,31 @@ const showTrackerData = async () => {
 const showNewButton = () => {
 	var div = document.createElement('div')
 	div.className = 'add'
+
 	var btn = document.createElement('button')
 	btn.className = 'add'
 	btn.innerText = '+ new Bug Tracker'
+
+	btn.addEventListener('click', (event) => {
+		var tracker = {}
+		tracker.seq = 'unknown'
+		tracker.date = new Date().toLocaleDateString()
+		tracker.product = ''
+		tracker.title = ''
+		tracker.info = ''
+		tracker.refer = ''
+		tracker.leader = ''
+		tracker.level = ''
+		tracker.status = ''
+		tracker.result = ''
+		tracker.remark = ''
+
+		axios.get('/tracker/add', {	params: tracker }).then((res) => {
+			tracker.seq = res.data.seq
+			console.log(tracker)
+		})
+	})
+
 	div.appendChild(btn)
 	document.getElementById('app').appendChild(div)
 }

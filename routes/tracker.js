@@ -15,22 +15,22 @@ router.get('/list', async function(req, res, next) {
 });
 
 router.get('/add', async function(req, res, next) {
-  var tracker = req.body
-  tracker.seq = await dbservice.getNewTrackerSequence()
+  var tracker = req.query
+  tracker.seq = await dbservice.getTrackerSequence()
   const seq = await dbservice.addTracker(tracker)
 
   res.json({seq})
 });
 
 router.get('/update', async function(req, res, next) {
-  var tracker = req.body
+  var tracker = req.query
   const seq = await dbservice.updTracker(tracker)
 
   res.json({seq})
 });
 
 router.get('/delete', async function(req, res, next) {
-  var tracker = req.body
+  var tracker = req.query
   const seq = await dbservice.delTracker(tracker.seq)
 
   res.json({seq})
