@@ -2,20 +2,26 @@ var express = require('express');
 var router = express.Router();
 
 const dbservice = require('../service/dbservice.js')
-const session = require('../service/session.js')
 
 /* User login. */
-router.get('/', async function(req, res, next) {
-	let form = req.query
-	console.log(form)
-	let user = await dbservice.getUser(form.u)
-	console.log(user)
+router.get('/', function(req, res, next) {
+	var errmsg = req.session.error || ''
+	res.render('login', { title:'Bug Tracker', errmsg: errmsg})
+})
 
-	if (user && user.password === form.p) {
-		res.send({result:'pass', msg:'登录成功', router:'tracker'})
-		session.reset(user.username)
+/* User login action. */
+router.post('/', async function(req, res, next) {
+	let username = req.body.username
+	let password = req.body.password
+	let user = await dbservice.getUser(username)
+
+	if (user && user.password === password) {
+		req.session.user = username
+		req.session.success = '登录成功'
+		res.redirect('/tracker')
 	} else {
-		res.send({result: 'err', msg:'登录失败', reason:'用户名或密码错误'})
+		req.session.error = '登录失败:用户名或密码错误'
+		res.redirect('/login')
 	}
 });
 

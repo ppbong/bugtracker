@@ -12,6 +12,8 @@ var dictsRouter = require('./routes/dicts');
 var trackerRouter = require('./routes/tracker');
 var permissionRouter = require('./routes/permission');
 
+var session = require('express-session')
+
 var app = express();
 
 // view engine setup
@@ -26,12 +28,32 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+  resave: false, // don't save session if unmodified
+  saveUninitialized: false, // don't create session until something stored
+  secret: 'session sec key',
+  cookie: {
+    maxAge: 1000 * 60 * 5, // session valid time
+  }
+}));
+
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/users', usersRouter);
 app.use('/dicts', dictsRouter);
 app.use('/tracker', trackerRouter);
 app.use('/permission', permissionRouter);
+
+app.use(function(req, res, next){
+  var err = req.session.error;
+  var msg = req.session.success;
+  delete req.session.error;
+  delete req.session.success;
+  res.locals.message = '';
+  if (err) res.locals.message = '<p class="msg error">' + err + '</p>';
+  if (msg) res.locals.message = '<p class="msg success">' + msg + '</p>';
+  next();
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -13,7 +13,6 @@
 }
 
 label {
-	color: red;
 	margin: 2px 5px;
 }
 
@@ -37,25 +36,13 @@ input:focus {
 	border-right-width: 0;
 }
 
-button {
+input.button {
 	background-color: #409EFF;
 	color: white;
 	border-width: 0;
 	padding: 2px 15px;
 }
 
-button:hover {
+input.button:hover {
 	background-color: #79bbff;
-}
-
-span {
-	color: #F56C6C;
-}
-
-span.success {
-	color: #67C23A;
-}
-
-span.danger {
-	color: #F56C6C;
 }

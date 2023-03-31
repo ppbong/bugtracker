@@ -6,3 +6,23 @@ body {
 a {
   color: #00B7FF;
 }
+
+span {
+	color: #F56C6C;
+}
+
+span.primary {
+	color: #409EFF
+}
+
+span.success {
+	color: #67C23A;
+}
+
+span.danger {
+	color: #F56C6C;
+}
+
+span.info {
+	color: #909399
+}

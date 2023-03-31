@@ -97,10 +97,33 @@ const createButtonGroup = () => {
 	btnEdit.innerText = '编辑'
 
 	btnEdit.addEventListener('click', (event) => {
+		const modify = ['date','title','info','refer','remark']
+		let line = event.target.parentNode.parentNode.parentNode
 		let btn = event.target
 		if (btn.className === 'edit') {
 			btn.className = 'save'
 			btn.innerText = '保存'
+
+			let td =  line.querySelectorAll('td')
+			td.forEach((e,i) => {
+				if (modify.indexOf(e.className) === -1) return
+
+				let input = document.createElement('input')
+				let value = e.innerText
+
+				if (e.className === 'date') {
+					input.type = 'date'
+					input.value = value.replaceAll('/','-')
+				} else if (e.className === 'refer') {
+					input.type = 'file'
+				} else {
+					input.type = 'text'
+					input.value = value
+				}
+				
+				e.innerHTML = ''
+				e.appendChild(input)
+			})
 		} else {
 			btn.className = 'edit'
 			btn.innerText = '编辑'
@@ -110,11 +133,119 @@ const createButtonGroup = () => {
 	btnDelete.className = 'delete'
 	btnDelete.innerText = '删除'
 
+	btnDelete.addEventListener('click', (event) => {
+		let line = event.target.parentNode.parentNode.parentNode
+		axios.get('/tracker/delete', {params: {seq: line.id}}).then((res) => {
+			if (res.data.err) {
+				document.getElementById('errmsg').innerHTML = res.data.err
+			} else {
+				line.parentNode.removeChild(line)
+			}
+		})
+	})
+
 	div.className = 'btnGroup'
 	div.appendChild(btnEdit)
 	div.appendChild(btnDelete)
 
 	return div
+}
+
+const createTrackerDataLine = (tracker, idx, options) => {
+	var tr = document.createElement('tr')
+
+	tr.id = tracker.seq
+	tr.className = tracker.result === 'done' ? 'success'
+		: tracker.result === 'close' ? 'info'
+		: tracker.level === 'high' ? 'danger'
+		: tracker.level === 'medium' ? 'warn'
+		: 'primary'
+
+	// 序号
+	td = document.createElement('td')
+	td.className = 'index'
+	td.innerText = idx
+	tr.appendChild(td)
+
+	// 日期
+	td = document.createElement('td')
+	td.className = 'date'
+	td.innerText = tracker.date
+	tr.appendChild(td)
+
+	// 产品
+	td = document.createElement('td')
+	td.className = 'product'
+	td.appendChild(createSelectElement(options, 'product', tracker.product))
+	tr.appendChild(td)
+
+	// 问题
+	td = document.createElement('td')
+	td.className = 'title'
+	td.innerText = tracker.title
+	tr.appendChild(td)
+
+	// 描述
+	td = document.createElement('td')
+	td.className = 'info'
+	td.innerText = tracker.info
+	tr.appendChild(td)
+
+	var path = tracker.date.replaceAll('/','')
+	var html = []
+
+	if (tracker.refer && tracker.refer !== '') {
+		let refers = tracker.refer.split('#') /*多个文件以#分隔*/
+		refers.forEach((e,i) => {
+			if(e && e.length>0) {
+				html.push('<a href="' + path + '/' + e + '" target="_blank">' + (i+1) + '</a>')
+			}
+		});
+	}
+	
+	// 参考
+	td = document.createElement('td')
+	td.className = 'refer'
+	td.innerHTML = html.join('')
+	tr.appendChild(td)
+
+	// 备注
+	td = document.createElement('td')
+	td.className = 'remark'
+	td.innerText = tracker.remark
+	tr.appendChild(td)
+
+	// 执行
+	td = document.createElement('td')
+	td.className = 'leader'
+	td.appendChild(createSelectElement(options, 'leader', tracker.leader))
+	tr.appendChild(td)
+
+	// 级别
+	td = document.createElement('td')
+	td.className = 'level'
+	td.appendChild(createSelectElement(options, 'level', tracker.level))
+	tr.appendChild(td)
+
+	// 状态
+	td = document.createElement('td')
+	td.className = 'status'
+	td.appendChild(createSelectElement(options, 'status', tracker.status))
+	tr.appendChild(td)
+
+	// 结果
+	td = document.createElement('td')
+	td.className = 'result'
+	td.appendChild(createSelectElement(options, 'result', tracker.result))
+	tr.appendChild(td)
+
+	// 操作
+	td = document.createElement('td')
+	td.className = 'oper'
+	td.appendChild(createButtonGroup())
+	tr.appendChild(td)
+
+	return tr
 }
 
 // 渲染表格
@@ -125,92 +256,7 @@ const showTrackerData = async () => {
 	var tbody = document.querySelector('tbody')
 
 	TrackerData.forEach((e,i) => {
-		tr = document.createElement('tr')
-		tr.id = e.seq
-		tr.className = e.result==='done'?'success':e.result==='close'?'info':e.level==='high'?'danger':e.level==='medium'?'warn':'primary'
-
-		// 序号
-		td = document.createElement('td')
-		td.className = 'index'
-		td.innerText = i+1
-		tr.appendChild(td)
-
-		// 日期
-		td = document.createElement('td')
-		td.className = 'date'
-		td.innerText = e.date
-		tr.appendChild(td)
-
-		// 产品
-		td = document.createElement('td')
-		td.className = 'product'
-		td.appendChild(createSelectElement(Options, 'product', e.product))
-		tr.appendChild(td)
-
-		// 问题
-		td = document.createElement('td')
-		td.className = 'title'
-		td.innerText = e.title
-		tr.appendChild(td)
-
-		// 描述
-		td = document.createElement('td')
-		td.className = 'info'
-		td.innerText = e.info
-		tr.appendChild(td)
-
-		var path = e.date.replaceAll('/','')
-		var refers = e.refer.split('#') /*多个文件以#分隔*/
-		var html = []
-		refers.forEach((e,i) => {
-			if(e && e.length>0) {
-				html.push('<a href="' + path + '/' + e + '" target="_blank">' + (i+1) + '</a>')
-			}
-		});
-
-		// 参考
-		td = document.createElement('td')
-		td.className = 'refer'
-		td.innerHTML = html.join('')
-		tr.appendChild(td)
-
-		// 备注
-		td = document.createElement('td')
-		td.className = 'remark'
-		td.innerText = e.remark
-		tr.appendChild(td)
-
-		// 执行
-		td = document.createElement('td')
-		td.className = 'leader'
-		td.appendChild(createSelectElement(Options, 'leader', e.leader))
-		tr.appendChild(td)
-
-		// 级别
-		td = document.createElement('td')
-		td.className = 'level'
-		td.appendChild(createSelectElement(Options, 'level', e.level))
-		tr.appendChild(td)
-
-		// 状态
-		td = document.createElement('td')
-		td.className = 'status'
-		td.appendChild(createSelectElement(Options, 'status', e.status))
-		tr.appendChild(td)
-
-		// 结果
-		td = document.createElement('td')
-		td.className = 'result'
-		td.appendChild(createSelectElement(Options, 'result', e.result))
-		tr.appendChild(td)
-
-		// 操作
-		td = document.createElement('td')
-		td.className = 'oper'
-		td.appendChild(createButtonGroup())
-		tr.appendChild(td)
-
-		tbody.appendChild(tr)
+		tbody.appendChild(createTrackerDataLine(e, i+1, Options))
 	});
 }
 
@@ -223,22 +269,20 @@ const showNewButton = () => {
 	btn.innerText = '+ new Bug Tracker'
 
 	btn.addEventListener('click', (event) => {
-		var tracker = {}
-		tracker.seq = 'unknown'
-		tracker.date = new Date().toLocaleDateString()
-		tracker.product = ''
-		tracker.title = ''
-		tracker.info = ''
-		tracker.refer = ''
-		tracker.leader = ''
-		tracker.level = ''
-		tracker.status = ''
-		tracker.result = ''
-		tracker.remark = ''
+		axios.get('/dicts').then((res) => {
+			const options = res.data
 
-		axios.get('/tracker/add', {	params: tracker }).then((res) => {
-			tracker.seq = res.data.seq
-			console.log(tracker)
+			axios.get('/tracker/add').then((res) => {
+				if (res.data.err) {
+					document.getElementById('errmsg').innerHTML = res.data.err
+				} else {
+					const tbody = document.querySelector('tbody')
+					const lines = tbody.querySelectorAll('tr')
+					let idx = lines.length
+					let element = createTrackerDataLine(res.data, idx, options)
+					tbody.appendChild(element)
+				}
+			})
 		})
 	})
 

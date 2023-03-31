@@ -13,7 +13,8 @@
   <body>
     <div class="nav">
       <h1><%= title %></h1>
-      <div id="uid" hidden="true"><%= username %></div>
+      <a href="/logout" target="_self"><span id="uid" class="primary"><%= username %></span></a>
+      <span id="errmsg" class="danger"></span>
     </div>
     
     <div id="app">
