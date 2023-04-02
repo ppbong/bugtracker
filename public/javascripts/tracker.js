@@ -1,14 +1,63 @@
-// 获取选项
-const getOptions = () => {
+const DataList = ['product', 'leader', 'level',  'status', 'result']
+
+const createDataListElement = (name) => {
+	return new Promise((resolve, reject) => {
+		if (-1 === DataList.indexOf(name)) {
+			reject('createDataList(name) => name invalid')
+		}
+
+		var id = name + '_list'
+		var element = document.getElementById(id)
+
+		if (element) {
+			reject('createDataList(name) => element exist')
+		}
+
+		element = document.createElement('datalist')
+		element.id = id
+
+		var url = name === 'leader' ? '/users/leader' : '/dicts/' + name
+
+		axios.get(url).then((res) => {
+			if (res.data.err) {
+				reject(res.data.err)
+			}
+
+			let list = res.data
+
+			list.forEach((e) => {
+				let option = document.createElement('option')
+				option.label = e.label
+				option.value = e.value
+
+				element.appendChild(option)
+			})
+
+			resolve(element)
+		})
+	})
+}
+
+const createDataList = () => {
+	const app = document.getElementById('app')
+
+	DataList.forEach(async (e) => {
+		var datalist = await createDataListElement(e)
+		if (datalist != null) {
+			app.appendChild(datalist)
+		}
+	})
+}
+
+const getPermission = (user) => {
 	return new Promise((resolve,reject) => {
-		axios.get('/dicts').then((res) => {
+		axios.get('/users/permission/' + user).then((res) => {
 			console.log(res.data)
 			resolve(res.data)
 		})
 	})
 }
 
-// 获取数据
 const getTrackerData = () => {
 	return new Promise((resolve,reject) => {
 		axios.get('/tracker/list').then((res) => {
@@ -18,40 +67,25 @@ const getTrackerData = () => {
 	})
 }
 
-// 获取权限
-const getPermission = (user) => {
-	return new Promise((resolve,reject) => {
-		axios.get('/permission/' + user).then((res) => {
-			console.log(res.data)
-			resolve(res.data)
-		})
-	})
-}
-
 // 创建选项元素
-const createSelectElement = (dict, type, value) => {
+const createSelectElement = (name, value) => {
+	var id = name + '_list'
+	var datalist = document.getElementById(id)
+
+	if (datalist === null) {
+		console.log('createSelectElement() => id invalid')
+		return null
+	}
+
 	var element = document.createElement('select')
-	element.name = type
+	element.name = name
 	element.className = value
 
-	var options = type === 'product'
-	? dict.product
-	: type === 'level'
-	? dict.level
-	: type === 'status'
-	? dict.status
-	: type === 'result'
-	? dict.result
-	: type === 'leader'
-	? dict.leader
-	: undefined
-
-	if (options === undefined) return element
-
+	var options = datalist.querySelectorAll('option')
 	options.forEach((e) => {
 		var option = document.createElement('option')
 		option.value = e.value
-		option.innerText = e.label
+		option.label = e.label
 		option.selected = e.value === value ? true : false
 		element.appendChild(option)
 	})
@@ -151,7 +185,7 @@ const createButtonGroup = () => {
 	return div
 }
 
-const createTrackerDataLine = (tracker, idx, options) => {
+const createTrackerDataLine = (tracker, idx) => {
 	var tr = document.createElement('tr')
 
 	tr.id = tracker.seq
@@ -171,12 +205,25 @@ const createTrackerDataLine = (tracker, idx, options) => {
 	td = document.createElement('td')
 	td.className = 'date'
 	td.innerText = tracker.date
+	td.addEventListener('click', (event) => {
+		let td = event.target
+		let input = document.createElement('input')
+		input.type = 'date'
+		input.value = event.target.innerText.replaceAll('/','-') 
+		input.addEventListener('change', (e) => {
+			let td = e.target.parentNode
+			console.log(e.target.value)
+			td.innerHTML = e.target.value
+		})
+		td.innerHTML = ''
+		td.appendChild(input)
+	})
 	tr.appendChild(td)
 
 	// 产品
 	td = document.createElement('td')
 	td.className = 'product'
-	td.appendChild(createSelectElement(options, 'product', tracker.product))
+	td.appendChild(createSelectElement('product', tracker.product))
 	tr.appendChild(td)
 
 	// 问题
@@ -218,25 +265,25 @@ const createTrackerDataLine = (tracker, idx, options) => {
 	// 执行
 	td = document.createElement('td')
 	td.className = 'leader'
-	td.appendChild(createSelectElement(options, 'leader', tracker.leader))
+	td.appendChild(createSelectElement('leader', tracker.leader))
 	tr.appendChild(td)
 
 	// 级别
 	td = document.createElement('td')
 	td.className = 'level'
-	td.appendChild(createSelectElement(options, 'level', tracker.level))
+	td.appendChild(createSelectElement('level', tracker.level))
 	tr.appendChild(td)
 
 	// 状态
 	td = document.createElement('td')
 	td.className = 'status'
-	td.appendChild(createSelectElement(options, 'status', tracker.status))
+	td.appendChild(createSelectElement('status', tracker.status))
 	tr.appendChild(td)
 
 	// 结果
 	td = document.createElement('td')
 	td.className = 'result'
-	td.appendChild(createSelectElement(options, 'result', tracker.result))
+	td.appendChild(createSelectElement('result', tracker.result))
 	tr.appendChild(td)
 
 	// 操作
@@ -248,15 +295,76 @@ const createTrackerDataLine = (tracker, idx, options) => {
 	return tr
 }
 
+const createNewForm = (router, tracker) => {
+	router = router === 'add' || router === 'edit' ? router : 'add'
+
+	const dateFormat = new Intl.DateTimeFormat('zh-CN', {year:'numeric', month:'2-digit', day:'2-digit'}).format
+
+	var t = tracker || {
+		seq: '',
+		date: dateFormat(new Date()).replaceAll('/','-'),
+		product: '',
+		title: '',
+		info: '',
+		refer: '',
+		leader: '',
+		level: '',
+		status: '',
+		result: '',
+		remark: '' 
+	}
+
+	var form = document.createElement('form')
+	form.method = 'POST'
+	form.action = router === 'add' ? '/tracker/add' : '/tracker/update'
+
+	var html = []
+	html.push('<div><label for="seq">流水号</label>')
+	html.push('<input name="seq" type="text" value="'+ t.seq +'" disabled></div>')
+	html.push('<div><label for="date">日期</label>')
+	html.push('<input name="date" type="date" value="'+ t.date +'"></div>')
+	html.push('<div><label for="product">产品</label>')
+	html.push('<input name="product" type="text" value="'+ t.product +'" list="product_list"></div>')
+	html.push('<div><label for="title">问题</label>')
+	html.push('<input name="title" type="text" value="'+ t.title +'"></div>')
+	html.push('<div><label for="info">描述</label>')
+	html.push('<input name="info" type="text" value="'+ t.info +'"></div>')
+	html.push('<div><label for="refer">参考</label>')
+	html.push('<input name="refer" type="file" value="'+ t.refer +' multiple"></div>')
+	html.push('<div><label for="remark">备注</label>')
+	html.push('<input name="remark" type="text" value="'+ t.remark +'"></div>')
+	html.push('<div><label for="leader">执行</label>')
+	html.push('<input name="leader" type="text" value="'+ t.leader +'" list="leader_list"></div>')
+	html.push('<div><label for="level">等级</label>')
+	html.push('<input name="level" type="text" value="'+ t.level +'" list="level_list"></div>')
+	html.push('<div><label for="status">状态</label>')
+	html.push('<input name="status" type="text" value="'+ t.status +'" list="status_list"></div>')
+	html.push('<div><label for="result">结果</label>')
+	html.push('<input name="result" type="text" value="'+ t.result +'" list="result_list"></div>')
+	html.push('<div><input type="submit" name="save" value="保存">')
+	html.push('<input type="button" name="cancel" value="取消"></div>')
+
+	form.innerHTML = html.join('')
+
+	var cancel = form.querySelector('input[name="cancel"]')
+	cancel.addEventListener('click', (event) => {
+		let form = event.target.parentNode
+
+		form.parentNode.removeChild(form)
+	})
+
+	form.appendChild(cancel)
+
+	document.getElementById('app').appendChild(form)
+}
+
 // 渲染表格
 const showTrackerData = async () => {
 	const TrackerData = await getTrackerData()
-	const Options = await getOptions()
-
 	var tbody = document.querySelector('tbody')
 
 	TrackerData.forEach((e,i) => {
-		tbody.appendChild(createTrackerDataLine(e, i+1, Options))
+		tbody.appendChild(createTrackerDataLine(e, i+1))
 	});
 }
 
@@ -269,21 +377,7 @@ const showNewButton = () => {
 	btn.innerText = '+ new Bug Tracker'
 
 	btn.addEventListener('click', (event) => {
-		axios.get('/dicts').then((res) => {
-			const options = res.data
-
-			axios.get('/tracker/add').then((res) => {
-				if (res.data.err) {
-					document.getElementById('errmsg').innerHTML = res.data.err
-				} else {
-					const tbody = document.querySelector('tbody')
-					const lines = tbody.querySelectorAll('tr')
-					let idx = lines.length
-					let element = createTrackerDataLine(res.data, idx, options)
-					tbody.appendChild(element)
-				}
-			})
-		})
+		createNewForm('add')
 	})
 
 	div.appendChild(btn)
@@ -291,9 +385,7 @@ const showNewButton = () => {
 }
 
 window.onload = () => {
-	getOptions()
-	getTrackerData()
-	getPermission(document.getElementById('uid').innerText)
+	createDataList()
 	showTrackerData()
 	showNewButton()
 }

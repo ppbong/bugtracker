@@ -144,20 +144,8 @@ const dbservice = {
 		})
 	},
 
-	getProductList: () => {
-		return queryDict('product')
-	},
-
-	getLevelList: () => {
-		return queryDict('level')
-	},
-
-	getStatusList: () => {
-		return queryDict('status')
-	},
-
-	getResultList: () => {
-		return queryDict('result')
+	getDict: (type) => {
+		return queryDict(type)
 	},
 
 	getUserList: () => {
