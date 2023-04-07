@@ -1,20 +1,15 @@
 const DataList = ['product', 'leader', 'level',  'status', 'result']
 
-const createDataListElement = (name) => {
+const _createDataList = (name) => {
 	return new Promise((resolve, reject) => {
 		if (-1 === DataList.indexOf(name)) {
 			reject('createDataList(name) => name invalid')
 		}
 
 		var id = name + '_list'
-		var element = document.getElementById(id)
 
-		if (element) {
-			reject('createDataList(name) => element exist')
-		}
-
-		element = document.createElement('datalist')
-		element.id = id
+		$('#' + id).remove()
+		$('#app').append('<datalist id="'+ id +'"></datalist>')
 
 		var url = name === 'leader' ? '/users/leader' : '/dicts/' + name
 
@@ -26,39 +21,37 @@ const createDataListElement = (name) => {
 			let list = res.data
 
 			list.forEach((e) => {
-				let option = document.createElement('option')
-				option.label = e.label
-				option.value = e.value
-
-				element.appendChild(option)
+				$('#' + id).append('<option label="' + e.label + '" value="' + e.value + '"></option>')
 			})
 
-			resolve(element)
+			resolve('ok')
 		})
 	})
 }
 
+// 创建数据字典节点
 const createDataList = () => {
-	const app = document.getElementById('app')
-
 	DataList.forEach(async (e) => {
-		var datalist = await createDataListElement(e)
-		if (datalist != null) {
-			app.appendChild(datalist)
-		}
+		await _createDataList(e)
 	})
 }
 
-const getPermission = (user) => {
+const _getPermission = () => {
 	return new Promise((resolve,reject) => {
-		axios.get('/users/permission/' + user).then((res) => {
+		axios.get('/users/permission/').then((res) => {
 			console.log(res.data)
 			resolve(res.data)
 		})
 	})
 }
 
-const getTrackerData = () => {
+// 获取用户权限
+var userPermission = null
+const getPermission = async () => {
+	userPermission = await _getPermission()
+}
+
+const _getTrackerData = () => {
 	return new Promise((resolve,reject) => {
 		axios.get('/tracker/list').then((res) => {
 			console.log(res.data)
@@ -67,12 +60,18 @@ const getTrackerData = () => {
 	})
 }
 
+// 获取数据列表
+var trackerData = null
+const getTrackerData = async () => {
+	trackerData = await _getTrackerData()
+}
+
 // 创建选项元素
 const createSelectElement = (name, value) => {
 	var id = name + '_list'
-	var datalist = document.getElementById(id)
+	var datalist = $('#' + id)
 
-	if (datalist === null) {
+	if (datalist === undefined) {
 		console.log('createSelectElement() => id invalid')
 		return null
 	}
@@ -186,57 +185,44 @@ const createButtonGroup = () => {
 }
 
 const createTrackerDataLine = (tracker, idx) => {
-	var tr = document.createElement('tr')
-
-	tr.id = tracker.seq
-	tr.className = tracker.result === 'done' ? 'success'
+	var className = tracker.result === 'done' ? 'success'
 		: tracker.result === 'close' ? 'info'
 		: tracker.level === 'high' ? 'danger'
 		: tracker.level === 'medium' ? 'warn'
 		: 'primary'
+	
+	$('#app > table > tbody').append('<tr id="'+ tracker.seq +'" class="'+ className +'"></tr')
 
 	// 序号
-	td = document.createElement('td')
-	td.className = 'index'
-	td.innerText = idx
-	tr.appendChild(td)
+	$('#' + tracker.seq).append('<td class="index">' + idx + '</td>')
 
 	// 日期
-	td = document.createElement('td')
-	td.className = 'date'
-	td.innerText = tracker.date
-	td.addEventListener('click', (event) => {
-		let td = event.target
-		let input = document.createElement('input')
-		input.type = 'date'
-		input.value = event.target.innerText.replaceAll('/','-') 
-		input.addEventListener('change', (e) => {
-			let td = e.target.parentNode
-			console.log(e.target.value)
-			td.innerHTML = e.target.value
-		})
-		td.innerHTML = ''
-		td.appendChild(input)
-	})
-	tr.appendChild(td)
+	$('#' + tracker.seq).append('<td class="date">'+ tracker.date + '<input type="date"></input></td>')
+	$('#' + tracker.seq).find('.date').find('input').css('display', 'none')
+
+	// td.addEventListener('click', (event) => {
+	// 	let td = event.target
+	// 	let input = document.createElement('input')
+	// 	input.type = 'date'
+	// 	input.value = event.target.innerText.replaceAll('/','-') 
+	// 	input.addEventListener('change', (e) => {
+	// 		let td = e.target.parentNode
+	// 		console.log(e.target.value)
+	// 		td.innerHTML = e.target.value
+	// 	})
+	// 	td.innerHTML = ''
+	// 	td.appendChild(input)
+	// })
+
 
 	// 产品
-	td = document.createElement('td')
-	td.className = 'product'
-	td.appendChild(createSelectElement('product', tracker.product))
-	tr.appendChild(td)
+	$('#' + tracker.seq).append('<td class="product">' + tracker.product + '</td>')
 
 	// 问题
-	td = document.createElement('td')
-	td.className = 'title'
-	td.innerText = tracker.title
-	tr.appendChild(td)
+	$('#' + tracker.seq).append('<td class="title">' + tracker.title + '</td>')
 
 	// 描述
-	td = document.createElement('td')
-	td.className = 'info'
-	td.innerText = tracker.info
-	tr.appendChild(td)
+	$('#' + tracker.seq).append('<td class="info">' + tracker.info + '</td>')
 
 	var path = tracker.date.replaceAll('/','')
 	var html = []
@@ -251,48 +237,28 @@ const createTrackerDataLine = (tracker, idx) => {
 	}
 	
 	// 参考
-	td = document.createElement('td')
-	td.className = 'refer'
-	td.innerHTML = html.join('')
-	tr.appendChild(td)
+	$('#' + tracker.seq).append('<td class="refer">' + html.join('') + '</td>')
 
 	// 备注
-	td = document.createElement('td')
-	td.className = 'remark'
-	td.innerText = tracker.remark
-	tr.appendChild(td)
+	$('#' + tracker.seq).append('<td class="remark">' + tracker.remark + '</td>')
 
 	// 执行
-	td = document.createElement('td')
-	td.className = 'leader'
-	td.appendChild(createSelectElement('leader', tracker.leader))
-	tr.appendChild(td)
+	$('#' + tracker.seq).append('<td class="leader">' + tracker.leader + '</td>')
 
 	// 级别
-	td = document.createElement('td')
-	td.className = 'level'
-	td.appendChild(createSelectElement('level', tracker.level))
-	tr.appendChild(td)
-
+	$('#' + tracker.seq).append('<td class="level"></td>')
+	$('#' + tracker.seq).find('.level').append('<select name="level" class="'+ tracker.level +'"></select>')
+	$('#' + tracker.seq).find('select[name="level"]').append($('#level_list').children().clone().each((i,e) => {
+		if (e.value === tracker.level) e.selected = true
+	}))
 	// 状态
-	td = document.createElement('td')
-	td.className = 'status'
-	td.appendChild(createSelectElement('status', tracker.status))
-	tr.appendChild(td)
+	$('#' + tracker.seq).append('<td class="status">' + tracker.status + '</td>')
 
 	// 结果
-	td = document.createElement('td')
-	td.className = 'result'
-	td.appendChild(createSelectElement('result', tracker.result))
-	tr.appendChild(td)
+	$('#' + tracker.seq).append('<td class="result">' + tracker.result + '</td>')
 
 	// 操作
-	td = document.createElement('td')
-	td.className = 'oper'
-	td.appendChild(createButtonGroup())
-	tr.appendChild(td)
-
-	return tr
+	$('#' + tracker.seq).append('<td class="oper">' + tracker.level + '</td>')
 }
 
 const createNewForm = (router, tracker) => {
@@ -360,11 +326,18 @@ const createNewForm = (router, tracker) => {
 
 // 渲染表格
 const showTrackerData = async () => {
-	const TrackerData = await getTrackerData()
-	var tbody = document.querySelector('tbody')
+	const theadLabels = ['序号','日期','产品','问题','问题描述','参考','备注','负责人','等级','状态','结果','操作']
+	await getTrackerData()
 
-	TrackerData.forEach((e,i) => {
-		tbody.appendChild(createTrackerDataLine(e, i+1))
+	$('#app').prepend('<table></table>')
+	$('#app > table').append('<thead><tr></tr></thead>').append('<tbody></tbody>')
+
+	theadLabels.forEach(e => {
+		$('#app > table > thead > tr').append('<th>' + e + '</th>')
+	})
+
+	trackerData.forEach((e,i) => {
+		createTrackerDataLine(e, i+1)
 	});
 }
 
@@ -385,6 +358,7 @@ const showNewButton = () => {
 }
 
 window.onload = () => {
+	createDataList()
 	createDataList()
 	showTrackerData()
 	showNewButton()

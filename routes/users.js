@@ -31,8 +31,8 @@ router.get('/leader', async function(req, res, next) {
 })
 
 /* for access control */
-router.get('/permission/:username', async function(req, res, next) {
-  var username = req.params.username;
+router.get('/permission/', async function(req, res, next) {
+  var username = req.session.user;
   const user = await dbservice.getUser(username);
 
   var permission = user && user.permissions ? user.permissions.split('|') : [];
