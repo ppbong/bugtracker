@@ -16,6 +16,8 @@
 
 table {
 	width: 100%;
+	max-height: calc(100vh - 45px - 100px);
+	overflow: auto;
 	border-collapse: collapse;
 	margin: 0 auto;
 	text-align: left;
@@ -84,60 +86,33 @@ tr.info {
 	/*background-color: #f4f4f5;*/
 }
 
-select.high {
-	background-color: #F56C6C;
-	color: #FFF;
-}
-select.medium {
-	background-color: #E6A23C;
-	color: #FFF;
-}
-select.low {
+.primary, .low {
 	background-color: #409EFF;
-	color: #FFF;
+	color: white;
 }
 
-select.resolved {
+.success, .resolved, .done {
 	background-color: #67C23A;
-	color: #FFF;
-}
-select.rejected {
-	background-color: #909399;
-	color: #FFF;
+	color: white;
 }
 
-select.done {
-	background-color: #67C23A;
-	color: #FFF;
+.warn, .medium {
+	background-color: #E6A23C;
+	color: white;
 }
-select.close {
+
+.danger, .high {
+	background-color: #F56C6C;
+	color: white;
+}
+
+.info, .rejected, .close {
 	background-color: #909399;
-	color: #FFF;
+	color: white;
 }
 
 a {
 	margin-left: 5px;
-}
-
-button {
-	width: 200px;
-	border-width: 0;
-	color: #FFF;
-}
-
-button.primary {
-	background-color: #409EFF;
-}
-
-button.primary:hover {
-	background-color: #79bbff;
-}
-
-button.danger {
-	background-color: #F56C6C;
-}
-button.danger:hover {
-	background-color: #f89898;
 }
 
 div#newLine {
@@ -157,30 +132,6 @@ div.btnGroup {
 	display: inline-flex;
 }
 
-div.add {
-	margin: 15px auto;
-}
-
-button.add {
-	background-color: #409EFF;
-}
-
-button.edit {
-	background-color: #409EFF;
-}
-
-button.save {
-	background-color: #E6A23C;
-}
-
-button.delete {
-	background-color: #F56C6C;
-}
-
-button:hover {
-	opacity: 50%;
-}
-
 td.index {
 	width: 60px;
 }
@@ -198,7 +149,7 @@ td.title {
 	overflow: auto;
 }
 
-td.info {
+td.descr {
 	color: blue;
 }
 
@@ -231,15 +182,37 @@ td.oper {
 }
 
 form {
+	position: fixed;
+	left: 0;
+	bottom: 0;
 	width: 100%;
-	margin: 15px auto;
 	border: 1px dotted #F56C6C;
 }
 
-form div{
-	padding: 5px;
+form div {
+	width: 100%;
+	margin: 3px auto;
 }
 
-label {
-	margin-right: 15px;
+form label,input {
+	padding: 2px 15px;
+}
+
+form input.longline {
+	width: 90%;
+}
+
+form input.button {
+	width: 100%;
+	padding: 2px;
+	border: none;
+}
+
+.button:hover {
+	opacity: 50%;
+	cursor: pointer;
+}
+
+div.hidden {
+	display: none;
 }

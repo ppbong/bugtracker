@@ -46,7 +46,7 @@ const tracker_schema = `CREATE TABLE IF NOT EXISTS tracker (
 	date TEXT,				/*日期*/
 	product TEXT,			/*所属产品*/
 	title TEXT,				/*标题*/
-	info TEXT,				/*问题详情*/
+	descr TEXT,				/*问题详情*/
 	refer TEXT,				/*参考*/
 	leader TEXT,			/*负责人*/
 	level TEXT,				/*问题等级*/
@@ -56,12 +56,12 @@ const tracker_schema = `CREATE TABLE IF NOT EXISTS tracker (
 )`
 
 const tracker_data = `INSERT INTO tracker VALUES (?,?,?,?,?,?,?,?,?,?,?)`
-const tracker_query_all = `SELECT seq,date,product,title,info,refer,leader,level,status,result,remark FROM tracker`
+const tracker_query_all = `SELECT seq,date,product,title,descr,refer,leader,level,status,result,remark FROM tracker`
 const tracker_query_all_default = tracker_query_all + ` ORDER BY seq`
 const tracker_query_all_bylevel = tracker_query_all + ` ORDER BY level DESC, seq ASC`
-const tracker_query_one = `SELECT seq,date,product,title,info,refer,leader,level,status,result,remark FROM tracker WHERE seq=?`
+const tracker_query_one = `SELECT seq,date,product,title,descr,refer,leader,level,status,result,remark FROM tracker WHERE seq=?`
 const tracker_insert = `INSERT INTO tracker VALUES (?,?,?,?,?,?,?,?,?,?,?)`
-const tracker_update = `UPDATE tracker SET date=?,product=?,title=?,info=?,refer=?,leader=?level=?,status=?,result=?,remark=? WHERE seq=?`
+const tracker_update = `UPDATE tracker SET date=?,product=?,title=?,descr=?,refer=?,leader=?level=?,status=?,result=?,remark=? WHERE seq=?`
 const tracker_delete = `DELETE FROM tracker WHERE seq=?`
 
 const initialized = function (dbfile) {
@@ -108,7 +108,7 @@ const initializing = function() {
 
 		db.run(tracker_schema)
 		stmt = db.prepare(tracker_data)
-		// seq,date,product,title,info,refer,leader,level,status,result,remark
+		// seq,date,product,title,descr,refer,leader,level,status,result,remark
 		stmt.run(1,'2023/01/01','P1','T1','I1','R1','L1','high','fix','open','R1')
 		stmt.run(2,'2023/01/02','P2','T2','I2','R2','L2','medium','cover','done','R2')
 		stmt.run(3,'2023/01/03','P3','T3','I3','R3','L3','low','resovled','close','R2')
@@ -196,7 +196,7 @@ const dbservice = {
 			params.push(tracker.date)
 			params.push(tracker.product)
 			params.push(tracker.title)
-			params.push(tracker.info)
+			params.push(tracker.descr)
 			params.push(tracker.refer)
 			params.push(tracker.leader)
 			params.push(tracker.level)
@@ -219,7 +219,7 @@ const dbservice = {
 			params.push(tracker.date)
 			params.push(tracker.product)
 			params.push(tracker.title)
-			params.push(tracker.info)
+			params.push(tracker.descr)
 			params.push(tracker.refer)
 			params.push(tracker.leader)
 			params.push(tracker.level)

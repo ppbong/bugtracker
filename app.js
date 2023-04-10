@@ -32,7 +32,8 @@ app.use(session({
   saveUninitialized: false, // don't create session until something stored
   secret: 'session sec key',
   cookie: {
-    maxAge: 1000 * 60 * 5, // session valid time
+    // maxAge: 1000 * 60 * 5, // session valid time
+    maxAge: 1000 * 60 * 60 * 8,
   }
 }));
 

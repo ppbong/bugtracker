@@ -14,10 +14,83 @@
   <body>
     <div class="nav">
       <h1><%= title %></h1>
-      <a href="/logout" target="_self"><span id="uid" class="primary"><%= username %></span></a>
+      <a href="/logout" target="_self"><span><%= username %></span></a>
       <span id="errmsg" class="danger"></span>
     </div>
     
-    <div id="app"></div>
+    <div id="app">
+      <table>
+        <thead>
+          <tr class="colName">
+            <th>序号</th>
+            <th>日期</th>
+            <th>产品</th>
+            <th>问题</th>
+            <th>描述</th>
+            <th>参考</th>
+            <th>备注</th>
+            <th>负责人</th>
+            <th>等级</th>
+            <th>状态</th>
+            <th>结果</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="template">
+            <td class="index"></td>
+            <td class="date"></td>
+            <td class="product"><select name="product"></select></td>
+            <td class="title"></td>
+            <td class="descr"></td>
+            <td class="refer"></td>
+            <td class="remark"></td>
+            <td class="leader"><select name="leader"></select></td>
+            <td class="level"><select name="level"></select></td>
+            <td class="status"><select name="status"></select></td>
+            <td class="result"><select name="result"></select></td>
+          </tr>
+        </tbody>
+      </table>
+      <form method="post">
+        <div>
+          <input name="seq" type="hidden" value="">
+          <label for="index">序号</label>
+          <input name="index" type="text" value="" disabled>
+          <label for="date">日期</label>
+          <input name="date" type="date" value="">
+        </div>
+        <div>
+          <label for="product">产品</label>
+          <input name="product" type="text" value="" list="product_list">
+          <label for="level">等级</label>
+          <input name="level" type="text" value="" list="level_list">
+          <label for="status">状态</label>
+          <input name="status" type="text" value="" list="status_list">
+          <label for="result">结果</label>
+          <input name="result" type="text" value="" list="result_list">
+          <label for="leader">负责人</label>
+          <input name="leader" type="text" value="" list="leader_list">
+        </div>
+        <div>
+          <label for="title">问题</label>
+          <input class="longline" name="title" type="text" value="">
+        </div>
+        <div>
+          <label for="descr">描述</label>
+          <input class="longline" name="descr" type="text" value="">
+        </div>
+        <div>
+          <label for="remark">备注</label>
+          <input class="longline" name="remark" type="text" value="">
+        </div>
+        <div>
+          <label for="refer">参考</label>
+          <input name="refer" type="file" value="" multiple>
+        </div>
+        <div>
+          <input class="button primary" type="submit" name="save" value="+ new Bug Tracker">
+        </div>
+      </form>
+    </div>
   </body>
 </html>
