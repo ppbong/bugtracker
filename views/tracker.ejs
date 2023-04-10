@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
   <head>
   	<meta charset="utf-8">
   	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,21 +36,22 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="template">
+          <tr class="template" style="display: none;">
             <td class="index"></td>
             <td class="date"></td>
-            <td class="product"><select name="product"></select></td>
+            <td class="product"><select name="product" aria-labelledby="product"></select></td>
             <td class="title"></td>
             <td class="descr"></td>
             <td class="refer"></td>
             <td class="remark"></td>
-            <td class="leader"><select name="leader"></select></td>
-            <td class="level"><select name="level"></select></td>
-            <td class="status"><select name="status"></select></td>
-            <td class="result"><select name="result"></select></td>
+            <td class="leader"><select name="leader" aria-labelledby="leader"></select></td>
+            <td class="level"><select name="level" aria-labelledby="level"></select></td>
+            <td class="status"><select name="status" aria-labelledby="status"></select></td>
+            <td class="result"><select name="result" aria-labelledby="result"></select></td>
           </tr>
         </tbody>
       </table>
+      <button class="add">新增</button>
       <form method="post">
         <div>
           <input name="seq" type="hidden" value="">

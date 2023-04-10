@@ -9,7 +9,7 @@ const _getOptions = (name) => {
 			if (res.data.err) {
 				reject(res.data.err)
 			} else {
-				console.log(res.data)
+				// console.log(res.data)
 				resolve(res.data)
 			}
 		})
@@ -32,7 +32,7 @@ const getOptions = async () => {
 const _getPermission = () => {
 	return new Promise((resolve,reject) => {
 		axios.get('/users/permission/').then((res) => {
-			console.log(res.data)
+			// console.log(res.data)
 			resolve(res.data)
 		})
 	})
@@ -46,7 +46,7 @@ const getPermission = async () => {
 const _getTrackerList = () => {
 	return new Promise((resolve,reject) => {
 		axios.get('/tracker/list').then((res) => {
-			console.log(res.data)
+			// console.log(res.data)
 			resolve(res.data)
 		})
 	})
@@ -158,58 +158,70 @@ const createTrackerDataLine = (tracker, idx) => {
 		referHtml.push('<a href="' + tracker.seq + '/' + e + '" target="_blank">' + (i+1) + '</a>')
 	})
 
+	$('.template').before(
+		$('.template').clone()
+		.css('display', '')
+		.attr('id', tracker.seq)
+		.attr('class', className)
+	)
+
+	$('#' + tracker.seq)
 	// 序号
-	$('.template > .index').html(idx)
-
+	.find('.index').html(idx)
+	.end()
 	// 日期
-	$('.template > .date').html(tracker.date)
-
+	.find('.date').html(tracker.date)
+	.end()
 	// 产品
-	$('.template > .product').find('select > option').each((i,e) => {
-		e.value === tracker.product ? e.selected = true : e.selected = false
+	.find('.product')
+	.find('option').each((i,e) => {
+		e.selected = e.value === tracker.product ? true : false
 	})
-
+	.end().end()
 	// 问题
-	$('.template > .title').html(tracker.title)
-
+	.find('.title').html(tracker.title)
+	.end()
 	// 描述
-	$('.template > .descr').html(tracker.descr)
-
+	.find('.descr').html(tracker.descr)
+	.end()
 	// 参考
-	$('.template > .refer').html(referHtml.join(''))
-
+	.find('.refer').html(referHtml.join(''))
+	.end()
 	// 备注
-	$('.template > .remark').html(tracker.remark)
-
+	.find('.remark').html(tracker.remark)
+	.end()
 	// 负责人
-	$('.template > .leader').find('option').each((i,e) => {
-		e.value === tracker.leader ? e.selected = true : e.selected = false
+	.find('.leader')
+	.find('option').each((i,e) => {
+		e.selected = e.value === tracker.leader ? true : false
 	})
-
+	.end().end()
 	// 级别
-	$('.template > .level').find('option').each((i,e) => {
-		e.value === tracker.level ? e.selected = true : e.selected = false
+	.find('.level')
+	.find('select').attr('class', tracker.level)
+	.find('option').each((i,e) => {
+		e.selected = e.value === tracker.level ? true : false
 	})
-
+	.end().end().end()
 	// 状态
-	$('.template > .status').find('select > option').each((i,e) => {
-		e.value === tracker.status ? e.selected = true : e.selected = false
+	.find('.status')
+	.find('select').attr('class', tracker.status)
+	.find('option').each((i,e) => {
+		e.selected = e.value === tracker.status ? true : false
 	})
-
+	.end().end().end()
 	// 结果
-	$('.template > .result').find('select > option').each((i,e) => {
-		e.value === tracker.result ? e.selected = true : e.selected = false
+	.find('.result')
+	.find('select').attr('class', tracker.result)
+	.find('option').each((i,e) => {
+		e.selected = e.value === tracker.result ? true : false
 	})
-
-	$('.template').before($('.template').clone().attr('id', tracker.seq).attr('class', className))
+	.end().end().end()
 }
 
 const showTrackerForm = (operator = 'add', idx) => {
-	const index = idx - 1
-
-	console.log(idx)
-
 	if (operator === 'edit') {
+		let index = idx - 1
 		$('form').attr('action', '/tracker/update')
 		$('form').find('[name="seq"]').attr('value', trackerList[index].seq)
 		$('form').find('[name="index"]').attr('value', idx)
@@ -234,10 +246,53 @@ const showTrackerTable = async () => {
 	});
 }
 
+const newTrackerHandler = () => {
+	$('button.add').click((e) => {
+		let now = new Date()
+		let idx = trackerList.length
+
+		const dateFormat = new Intl.DateTimeFormat('zh-CN', {year:'numeric', month:'2-digit', day:'2-digit'}).format
+
+		trackerList.push({
+			date: dateFormat(new Date()).replaceAll('/','-'),
+		})
+
+		createTrackerDataLine(trackerList[idx], idx)
+	})
+}
+
 window.onload = async () => {
 	await getOptions()
 	await getPermission()
 	await getTrackerList()
 	showTrackerTable()
 	showTrackerForm()
+	newTrackerHandler()
+
+	$(document).dblclick((e) => {
+		console.log('dblclick' + e.target)
+	})
+
+	$(document).change((e) => {
+		if (e.target.tagName === 'SELECT') {
+			
+			if (e.target.name === 'level' || e.target.name === 'status' || e.target.name === 'result') {
+				e.target.className = e.target.value
+
+				tr = e.target.parentNode.parentNode
+
+				let level  = $(tr).find('select[name="level"]').val()
+				let status = $(tr).find('select[name="status"]').val()
+				let result = $(tr).find('select[name="result"]').val()
+
+				const className = result === 'done' ? 'success'
+				: result === 'close' ? 'info'
+				: level === 'high' ? 'danger'
+				: level === 'medium' ? 'warn'
+				: 'primary'
+
+				$(tr).attr('class', className)
+			}
+		}
+	})
 }
