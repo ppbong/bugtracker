@@ -153,12 +153,14 @@ const dbservice = {
 			db.run(dict_delete, type, (err) => {
 				if (err) throw err
 
-				stmt = db.prepare(dict_data)
 				list.forEach(e => {
-					// type,value,label,remark
-					stmt.run(type, e.value, e.label, e.remark)
-				});
-				stmt.finalize()
+					db.serialize(() => {
+						// type,value,label,remark
+						stmt = db.prepare(dict_data)
+						stmt.run(type, e.value, e.label, e.remark)
+						stmt.finalize()
+					})
+				})
 			})
 		})
 	},
@@ -202,6 +204,7 @@ const dbservice = {
 						} else {
 							stmt.run(e.password, e.cname, e.permission, e.remark, e.username)
 						}
+						stmt.finalize()
 					}
 				})
 			})

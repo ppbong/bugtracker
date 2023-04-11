@@ -57,6 +57,12 @@ const getTrackerList = async () => {
 	trackerList = await _getTrackerList()
 }
 
+// 获取当前日期
+const getNowDate = () => {
+	const dateFormat = new Intl.DateTimeFormat('zh-CN', {year:'numeric', month:'2-digit', day:'2-digit'}).format
+	return dateFormat(new Date()).replaceAll('/','-')
+}
+
 const handleSelectChange = (node) => {
 	// tr-td-select
 	var line = node.parentNode.parentNode
@@ -251,7 +257,7 @@ const newTrackerHandler = () => {
 		let now = new Date()
 		let idx = trackerList.length
 
-		const dateFormat = new Intl.DateTimeFormat('zh-CN', {year:'numeric', month:'2-digit', day:'2-digit'}).format
+		
 
 		trackerList.push({
 			date: dateFormat(new Date()).replaceAll('/','-'),

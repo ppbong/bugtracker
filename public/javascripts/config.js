@@ -85,18 +85,19 @@ const prepareConfig = () => {
         appendTableData2('permission', res.data)
     })
 
-    $('#app').append('<button class="save primary" name="save">保存</button>')
+    $('#app').append('<div><button class="save primary" name="save">保存</button></div>')
 }
 
 const styleAdjust = () => {
     $('fieldset').css({
-        width: '80%',
+        // width: '80%',
         margin: '5px auto',
     })
 
     $('#app').find('.save').css({
         padding: '2px 45px',
     }).parent().css({
+        width: '100%',
         textAlign: 'center',
     })
 }
@@ -197,9 +198,7 @@ const addEventListen = () => {
             })
 
             axios.post('/config/save', data).then(res => {
-                if (res.err) {
-                    console.log(res.err)
-                }
+                alert(res.data)
             })
         } else {
             console.log('unknown button event')
