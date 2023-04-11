@@ -1,15 +1,22 @@
+body {
+	-webkit-user-select: none;
+	user-select: none;
+}
+
 .container {
 	width: 400px;
 	margin: 0 auto;
 	text-align: center;
-	background-color: #ecf5ff;
 	padding: 45px;
-	user-select: none;
 }
 
 .container div {
 	margin: 15px 0px;
 	width: 100%;
+}
+
+h1 {
+	color: #73767a;
 }
 
 label {
@@ -37,12 +44,12 @@ input:focus {
 }
 
 input.button {
-	background-color: #409EFF;
-	color: white;
 	border-width: 0;
 	padding: 2px 15px;
 }
 
 input.button:hover {
-	background-color: #79bbff;
+	cursor: pointer;
+	opacity: 70%;
+	/* background-color: #79bbff; */
 }

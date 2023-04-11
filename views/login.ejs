@@ -10,7 +10,7 @@
     <script src="/javascripts/axios.min.js"></script>
   </head>
   <body>
-      <div class="container">
+      <div class="container primary-5">
         <h1>Welcome to <span><%= title %></span></h1>
         <form method="post" action="/login">
           <div>
@@ -23,7 +23,7 @@
             <input type="password" id='password' name="password" placeholder="口令">
             <!-- <span class="danger">*</span> -->
           </div>
-          <input class="button" type="submit" name="login" value="登录">
+          <input class="button primary" type="submit" name="login" value="登录">
           <div><span class="danger"><%= errmsg %></span></div>
         </form>
       </div>

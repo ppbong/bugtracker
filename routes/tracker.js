@@ -9,8 +9,8 @@ router.get('/', async function(req, res, next) {
   let user = await dbservice.getUser(username)
 
   if (user) {
-    req.session.permission = user.permissions.split('|')
-    res.render('tracker', { title: '问题跟踪', username: username })
+    req.session.permission = user.permission.split('|')
+    res.render('tracker', { title: '问题跟踪', username })
   } else {
     req.session.error = '操作超时，请重新登录'
     res.redirect('/login')

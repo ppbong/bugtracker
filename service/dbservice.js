@@ -18,27 +18,28 @@ const sequence_increment = `UPDATE sequence SET seq=seq+1 WHERE name=?`
 // 数据字典
 const dict_schema = `CREATE TABLE IF NOT EXISTS dict (
 	type TEXT,				/*类别*/
-	name TEXT,				/*名称*/
 	value TEXT,				/*取值*/
 	label TEXT,				/*标签*/
 	remark TEXT				/*备注*/
 )`
 
-const dict_data = `INSERT INTO dict VALUES (?,?,?,?,?)`
-const dict_query_all_bytype = `SELECT type,name,value,label,remark FROM dict WHERE type=?`
+const dict_data = `INSERT INTO dict VALUES (?,?,?,?)`
+const dict_query_all_bytype = `SELECT type,value,label,remark FROM dict WHERE type=?`
+const dict_delete = `DELETE FROM dict WHERE type=?`
 
 // 用户
 const user_schema = `CREATE TABLE IF NOT EXISTS user (
 	username TEXT PRIMARY KEY,/*用户名*/
 	password TEXT,			/*口令*/
 	cname TEXT,				/*姓名*/
-	permissions TEXT,		/*权限*/
+	permission TEXT,		/*权限*/
 	remark TEXT				/*备注*/
 )`
 
 const user_data = `INSERT INTO user VALUES (?,?,?,?,?)`
-const user_query_one = `SELECT username,password,cname,permissions,remark FROM user WHERE username=?`
-const user_query_all = `SELECT username,password,cname,permissions,remark FROM user`
+const user_query_one = `SELECT username,password,cname,permission,remark FROM user WHERE username=?`
+const user_query_all = `SELECT username,password,cname,permission,remark FROM user`
+const user_update = `UPDATE user SET password=?,cname=?,permission=?,remark=? WHERE username=?`
 
 // 问题跟踪
 const tracker_schema = `CREATE TABLE IF NOT EXISTS tracker (
@@ -84,34 +85,33 @@ const initializing = function() {
 
 		db.run(dict_schema)
 		stmt = db.prepare(dict_data)
-		// type,name,value,label,descr
-		stmt.run('product', 'P1', 'admin', '平台', '')
-		stmt.run('product', 'P2', 'agent', '代理', '')
-		stmt.run('level', 'L1', 'low', '低', '')
-		stmt.run('level', 'L2', 'medium', '中', '')
-		stmt.run('level', 'L3', 'high', '高', '')
-		stmt.run('status', 'S1', 'fix', '待排查', '')
-		stmt.run('status', 'S2', 'cover', '待修复', '')
-		stmt.run('status', 'S3', 'resolved', '已处理', '')
-		stmt.run('status', 'S4', 'rejected', '不处理', '')
-		stmt.run('result', 'R1', 'open', '待复核', '')
-		stmt.run('result', 'R2', 'done', '已完成', '')
-		stmt.run('result', 'R3', 'close', '已关闭', '')
+		// type,value,label,remark
+		stmt.run('product', 'admin', '平台', '')
+		stmt.run('product', 'agent', '代理', '')
+		stmt.run('level', 'low', '低', '')
+		stmt.run('level', 'medium', '中', '')
+		stmt.run('level', 'high', '高', '')
+		stmt.run('status', 'fix', '待排查', '')
+		stmt.run('status', 'cover', '待修复', '')
+		stmt.run('status', 'resolved', '已处理', '')
+		stmt.run('status', 'rejected', '不处理', '')
+		stmt.run('result', 'open', '待复核', '')
+		stmt.run('result', 'done', '已完成', '')
+		stmt.run('result', 'close', '已关闭', '')
 		stmt.finalize()
 
 		db.run(user_schema)
 		stmt = db.prepare(user_data)
-		// username,password,cname,permissions,remark
-		stmt.run('admin', '123456', 'admin', 'add|del|edit|level|status|result|remark', '')
-		stmt.run('user1', '123456', 'user1', 'status|remark')
+		// username,password,cname,permission,remark
+		stmt.run('admin', '123456', 'admin', 'add|del|edit|level|status|result|remark|config', '')
 		stmt.finalize()
 
 		db.run(tracker_schema)
 		stmt = db.prepare(tracker_data)
 		// seq,date,product,title,descr,refer,leader,level,status,result,remark
-		stmt.run(1,'2023/01/01','P1','T1','I1','R1','L1','high','fix','open','R1')
-		stmt.run(2,'2023/01/02','P2','T2','I2','R2','L2','medium','cover','done','R2')
-		stmt.run(3,'2023/01/03','P3','T3','I3','R3','L3','low','resovled','close','R2')
+		stmt.run(1,'2023/01/01','P1','T1','I1','R1','L1','high','fix','open','示例数据')
+		stmt.run(2,'2023/01/02','P2','T2','I2','R2','L2','medium','cover','done','示例数据')
+		stmt.run(3,'2023/01/03','P3','T3','I3','R3','L3','low','resovled','close','示例数据')
 		stmt.finalize()
 	})
 }()
@@ -148,6 +148,21 @@ const dbservice = {
 		return queryDict(type)
 	},
 
+	setDict: (type, list) => {
+		return new Promise((resolve, reject) => {
+			db.run(dict_delete, type, (err) => {
+				if (err) throw err
+
+				stmt = db.prepare(dict_data)
+				list.forEach(e => {
+					// type,value,label,remark
+					stmt.run(type, e.value, e.label, e.remark)
+				});
+				stmt.finalize()
+			})
+		})
+	},
+
 	getUserList: () => {
 		return new Promise((resolve, reject) => {
 			db.all(user_query_all, (err, rows) => {
@@ -164,6 +179,31 @@ const dbservice = {
 				if (err) throw err
 
 				resolve(row)
+			})
+		})
+	},
+
+	setUser: (list) => {
+		return new Promise((resolve, reject) => {
+			list.forEach(e => {
+				db.get(user_query_one, e.username, (err, row) => {
+					if (err) throw err
+
+					if (row === undefined) {
+						stmt = db.prepare(user_data)
+						// username,password,cname,permission,remark
+						stmt.run(e.username, e.password, e.cname, e.permission, e.remark)
+						stmt.finalize()
+					} else {
+						stmt = db.prepare(user_update)
+						// password,cname,permission,remark,username
+						if (e.password === '******') {
+							stmt.run(row.password, e.cname, e.permission, e.remark, e.username)
+						} else {
+							stmt.run(e.password, e.cname, e.permission, e.remark, e.username)
+						}
+					}
+				})
 			})
 		})
 	},

@@ -35,7 +35,7 @@ router.get('/permission/', async function(req, res, next) {
   var username = req.session.user;
   const user = await dbservice.getUser(username);
 
-  var permission = user && user.permissions ? user.permissions.split('|') : [];
+  var permission = user && user.permission ? user.permission.split('|') : [];
   res.send(permission);
 })
 

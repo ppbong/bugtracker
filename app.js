@@ -10,6 +10,7 @@ var loginRouter = require('./routes/login');
 var usersRouter = require('./routes/users');
 var dictsRouter = require('./routes/dicts');
 var trackerRouter = require('./routes/tracker');
+var configRouter = require('./routes/config');
 
 var session = require('express-session')
 
@@ -42,6 +43,7 @@ app.use('/login', loginRouter);
 app.use('/users', usersRouter);
 app.use('/dicts', dictsRouter);
 app.use('/tracker', trackerRouter);
+app.use('/config', configRouter);
 
 app.use(function(req, res, next){
   var err = req.session.error;

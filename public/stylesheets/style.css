@@ -11,18 +11,182 @@ span {
 	color: #F56C6C;
 }
 
-span.primary {
-	color: #409EFF
+label {
+	-webkit-user-select: none;
+	user-select: none;
 }
 
-span.success {
-	color: #67C23A;
+fieldset {
+	background-color: #ecf5ff;
+	border: 1px dotted #F56C6C;
+	margin: 5px auto;
 }
 
-span.danger {
-	color: #F56C6C;
+fieldset legend {
+	color: #b88230;
+	-webkit-user-select: none;
+	user-select: none;
 }
 
-span.info {
-	color: #909399
+table thead {
+	color: #73767a;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+button {
+	border: none;
+	margin: 2px 2px;
+	border-radius: 3px;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+button:hover {
+	cursor: pointer;
+	opacity: 70%;
+}
+
+.primary {
+	background-color: #409EFF;
+}
+
+.primary-1 {
+	background-color: #337ecc;
+}
+
+.primary-2 {
+	background-color: #79bbff;
+}
+
+.primary-3 {
+	background-color: #a0cfff;
+}
+
+.primary-4 {
+	background-color: #c6e2ff;
+}
+
+.primary-5 {
+	background-color: #d9ecff;
+}
+
+.primary-6 {
+	background-color: #ecf5ff;
+}
+
+.success {
+	background-color: #67C23A;
+}
+
+.success-1 {
+	background-color: #529b2e;
+}
+
+.success-2 {
+	background-color: #95d475;
+}
+
+.success-3 {
+	background-color: #b3e19d;
+}
+
+.success-4 {
+	background-color: #d1edc4;
+}
+
+.success-5 {
+	background-color: #e1f3d8;
+}
+
+.success-6 {
+	background-color: #f0f9eb;
+}
+
+.warn {
+	background-color: #E6A23C;
+}
+
+.warn-1 {
+	background-color: #b88230;
+}
+
+.warn-2 {
+	background-color: #eebe77;
+}
+
+.warn-3 {
+	background-color: #f3d19e;
+}
+
+.warn-4 {
+	background-color: #f8e3c5;
+}
+
+.warn-5 {
+	background-color: #faecd8;
+}
+
+.warn-6 {
+	background-color: #fdf6ec;
+}
+
+.danger {
+	background-color: #F56C6C;
+}
+
+.danger-1 {
+	background-color: #c45656;
+}
+
+.danger-2 {
+	background-color: #f89898;
+}
+
+.danger-3 {
+	background-color: #fab6b6;
+}
+
+.danger-4 {
+	background-color: #fcd3d3;
+}
+
+.danger-5 {
+	background-color: #fde2e2;
+}
+
+.danger-6 {
+	background-color: #fef0f0;
+}
+
+.info {
+	background-color: #909399;
+}
+
+.info-1 {
+	background-color: #73767a;
+}
+
+.info-2 {
+	background-color: #b1b3b8;
+}
+
+.info-3 {
+	background-color: #c8c9cc;
+}
+
+.info-4 {
+	background-color: #dedfe0;
+}
+
+.info-5 {
+	background-color: #e9e9eb;
+}
+
+.info-6 {
+	background-color: #f4f4f5;
+}
+
+.primary, .success, .warn, .danger, .info {
+	color: #FFF;
 }

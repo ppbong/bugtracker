@@ -261,10 +261,17 @@ const newTrackerHandler = () => {
 	})
 }
 
+const config = () => {
+	if (-1 === permission.indexOf('config')) return;
+
+	$('div.nav').append('<a href="/config">数据字典</a>')
+}
+
 window.onload = async () => {
 	await getOptions()
 	await getPermission()
 	await getTrackerList()
+	config()
 	showTrackerTable()
 	showTrackerForm()
 	newTrackerHandler()
