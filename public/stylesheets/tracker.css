@@ -157,6 +157,19 @@ div.divider {
 	border-bottom: 1px dotted #909399;
 }
 
+div.newFile,div.oldFile {
+	display: inline;
+	border-radius: 2px;
+}
+
+div.newFile {
+	background-color: #79bbff;
+}
+
+div.oldFile {
+	background-color: #b3e19d;
+}
+
 div.buttonGroup {
 	width: 100%;
 	text-align: center;
@@ -185,14 +198,23 @@ form button {
 	margin: 5px;
 }
 
-input#title, input#descr, input#remark {
+form button.small {
+	width: auto;
+}
+
+form input#title, input#descr, input#remark {
 	width: 85%;
+}
+
+form input#refer {
+	padding: 0;
+	width: 70px;
 }
 
 button#create {
 	width: 100%;
 	padding: 3px;
-	margin: 5px;
+	margin: 5px 0;
 }
 
 div.hidden {

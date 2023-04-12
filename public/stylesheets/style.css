@@ -16,6 +16,11 @@ label {
 	user-select: none;
 }
 
+input {
+	/*去掉输入时的黑边框*/
+	outline: none; 
+}
+
 fieldset {
 	background-color: #ecf5ff;
 	border: 1px dotted #F56C6C;

@@ -124,13 +124,18 @@ const createTrackerTableLine = (trackers) => {
 		html.push('<td class="title">'+ element.title +'</td>')
 		html.push('<td class="descr">'+ element.descr +'</td>')
 
-		html.push('<td class="refer">')
-		var link = element.refer.split('|') || []
-		link.forEach((e,idx) => {
-			html.push('<a href="' + element.seq + '/' + e + '" target="_blank">' + (idx+1) + '</a>')
-		})
-		html.push('</td>')
-
+		// 参考文件
+		if ( element.refer === undefined || element.refer === '') {
+			html.push('<td class="refer"></td>')
+		} else {
+			let referFile = element.refer.split('|')
+			html.push('<td class="refer">')
+			referFile.forEach((e,idx) => {
+				html.push('<a href="' + element.seq + '/' + e + '" target="_blank">' + (idx+1) + '</a>')
+			})
+			html.push('</td>')
+		}
+		
 		html.push('<td class="remark">'+ element.remark +'</td>')
 		html.push('<td class="leader"><select name="leader" aria-label="Leader">'+ options.leader +'</select></td>')
 		html.push('<td class="level"><select name="level" class="'+ element.level +'" aria-label="Level">'+ options.level +'</select></td>')
@@ -232,8 +237,12 @@ const createTrackrForm = (operator = 'new', idx) => {
 	html.push('<label for="result">结果</label><select id="result">'+ options.result +'</select>')
 	html.push('</div>')
 
-	html.push('<div><label for="refer">参考</label><input id="refer" value="" type="file"></div>')
-	
+	// 参考文件
+	html.push('<div><label for="refer">参考</label><input id="refer" type="file" accept=".png,.pdf,.txt" multiple></div>')
+	// 分割线
+	html.push('<div class="divider"></div>')
+	// 参考文件列表
+	html.push('<div class="referList"></div>')
 	// 分割线
 	html.push('<div class="divider"></div>')
 
@@ -279,8 +288,21 @@ const createTrackrForm = (operator = 'new', idx) => {
 		$('#result').find('option').each((i,e) => {
 			e.selected = e.value === tracker.result ? true : false
 		})
+
+		// 添加原有参考文件显示
+		createReferList(tracker.refer, false)
 	}
-	
+
+	$('#refer').change(event => {
+		console.log(event.target.files)
+
+		let fileNames = []
+		for (const file of event.target.files) fileNames.push(file.name)
+
+		// 添加新增参考文件显示
+		createReferList(fileNames.join('|'), true)
+	})
+
 	$('#save').click((event) => {
 		// event.preventDefault()
 		let trackerNew = {
@@ -348,6 +370,30 @@ const createTrackrForm = (operator = 'new', idx) => {
 		// event.preventDefault()
 		$('#trackerForm').remove()
 	})
+}
+
+// 表单中参考文件列表（原有、新增）
+const createReferList = (fileList = '', isFromInput = false) => {
+	if (fileList === '') return
+
+	const className = isFromInput ? 'newFile' : 'oldFile'
+	const fileNames = fileList.split('|')
+	fileNames.forEach(element => {
+		$('<div class="'+ className +'"><label>'+ element +'</label><button class="small danger">-</button></div>')
+		.find('button').click(event => {
+			$(event.target.parentNode).remove()
+		}).end()
+		.appendTo($('.referList'))
+	})
+}
+
+// 文件上传
+const uploadFile = (files) => { // event.target.files
+	var forms = new FormData()
+	forms.append('file', files[0])
+
+	var opt = {headers: {'Content-Type': 'multipart/form-data'}}
+	axios.post('', forms, opt)
 }
 
 window.onload = async () => {
