@@ -1,5 +1,5 @@
 * {
-	color: #606266;
+	color: #333;
 	-webkit-user-select: none;
 	user-select: none;
 }
@@ -16,7 +16,7 @@
 
 table {
 	width: 100%;
-	max-height: calc(100vh - 45px - 100px);
+	max-height: calc(100vh - 100px);
 	overflow: auto;
 	border-collapse: collapse;
 	margin: 0 auto;
@@ -33,7 +33,7 @@ th,td {
 }
 
 tbody tr:hover {
-	background-color: #F2F3F5;
+	opacity: 75%;
 }
 
 tr.primary {
@@ -42,8 +42,8 @@ tr.primary {
 	background-color: #79bbff;
 	background-color: #a0cfff;
 	background-color: #c6e2ff;
-	background-color: #d9ecff;
-	/*background-color: #ecf5ff;*/
+	/* background-color: #d9ecff; */
+	/* background-color: #ecf5ff; */
 }
 
 tr.success {
@@ -52,8 +52,8 @@ tr.success {
 	background-color: #95d475;
 	background-color: #b3e19d;
 	background-color: #d1edc4;
-	background-color: #e1f3d8;
-	/*background-color: #f0f9eb;*/
+	/* background-color: #e1f3d8; */
+	/* background-color: #f0f9eb; */
 }
 
 tr.warn {
@@ -62,8 +62,8 @@ tr.warn {
 	background-color: #eebe77;
 	background-color: #f3d19e;
 	background-color: #f8e3c5;
-	background-color: #faecd8;
-	/*background-color: #fdf6ec;*/
+	/* background-color: #faecd8; */
+	/* background-color: #fdf6ec; */
 }
 
 tr.danger {
@@ -72,8 +72,8 @@ tr.danger {
 	background-color: #f89898;
 	background-color: #fab6b6;
 	background-color: #fcd3d3;
-	background-color: #fde2e2;
-	/*background-color: #fef0f0;*/
+	/* background-color: #fde2e2; */
+	/* background-color: #fef0f0; */
 }
 
 tr.info {
@@ -82,8 +82,8 @@ tr.info {
 	background-color: #b1b3b8;
 	background-color: #c8c9cc;
 	background-color: #dedfe0;
-	background-color: #e9e9eb;
-	/*background-color: #f4f4f5;*/
+	/* background-color: #e9e9eb; */
+	/* background-color: #f4f4f5; */
 }
 
 .primary, .low {
@@ -115,23 +115,6 @@ a {
 	margin-left: 5px;
 }
 
-div#newLine {
-	width: 100%;
-}
-
-div#newLine input {
-	margin-left: 15px;
-}
-
-div#newLine select {
-	margin-right: 15px;
-}
-
-div.btnGroup {
-	width: 80px;
-	display: inline-flex;
-}
-
 td.index {
 	width: 60px;
 }
@@ -143,18 +126,9 @@ td.date {
 td.product {
 	width: 100px;
 }
-
-td.title {
-	max-width: 180px;
-	overflow: auto;
-}
-
-td.descr {
-	color: blue;
-}
-
-td.refer {
-	max-width: 80px;
+td.product select:disabled {
+	color: #333;
+	opacity: 1;
 }
 
 td.leader {
@@ -173,44 +147,52 @@ td.result {
 	width: 80px;
 }
 
-td.remark {
-	max-width: 120px;
+#trackerForm {
+	width: 100%;
 }
 
-td.oper {
-	width: 80px;
+div.divider {
+	width: 100%;
+	height: 1px;
+	border-bottom: 1px dotted #909399;
+}
+
+div.buttonGroup {
+	width: 100%;
+	text-align: center;
 }
 
 form {
-	position: fixed;
-	left: 0;
-	bottom: 0;
-	width: 100%;
+	width: 50%;
+	padding: 15px;
+	margin: 0 auto;
+	border-radius: 10px;
+	background-color: #c6e2ff;
 	border: 1px dotted #F56C6C;
 }
 
 form div {
 	width: 100%;
-	margin: 3px auto;
+	margin: 5px auto;
 }
 
 form label,input {
 	padding: 2px 15px;
 }
 
-form input.longline {
-	width: 90%;
+form button {
+	width: 80px;
+	margin: 5px;
 }
 
-form input.button {
+input#title, input#descr, input#remark {
+	width: 85%;
+}
+
+button#create {
 	width: 100%;
-	padding: 2px;
-	border: none;
-}
-
-.button:hover {
-	opacity: 50%;
-	cursor: pointer;
+	padding: 3px;
+	margin: 5px;
 }
 
 div.hidden {

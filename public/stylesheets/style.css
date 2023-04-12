@@ -49,10 +49,12 @@ button:hover {
 
 .primary {
 	background-color: #409EFF;
+	color: white;
 }
 
 .primary-1 {
 	background-color: #337ecc;
+	color: white;
 }
 
 .primary-2 {
@@ -77,10 +79,12 @@ button:hover {
 
 .success {
 	background-color: #67C23A;
+	color: white;
 }
 
 .success-1 {
 	background-color: #529b2e;
+	color: white;
 }
 
 .success-2 {
@@ -105,10 +109,12 @@ button:hover {
 
 .warn {
 	background-color: #E6A23C;
+	color: white;
 }
 
 .warn-1 {
 	background-color: #b88230;
+	color: white;
 }
 
 .warn-2 {
@@ -133,10 +139,12 @@ button:hover {
 
 .danger {
 	background-color: #F56C6C;
+	color: white;
 }
 
 .danger-1 {
 	background-color: #c45656;
+	color: white;
 }
 
 .danger-2 {
@@ -161,10 +169,12 @@ button:hover {
 
 .info {
 	background-color: #909399;
+	color: white;
 }
 
 .info-1 {
 	background-color: #73767a;
+	color: white;
 }
 
 .info-2 {
@@ -187,6 +197,6 @@ button:hover {
 	background-color: #f4f4f5;
 }
 
-.primary, .success, .warn, .danger, .info {
+/* .primary, .success, .warn, .danger, .info {
 	color: #FFF;
-}
+} */

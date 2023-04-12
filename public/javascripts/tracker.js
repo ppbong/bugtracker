@@ -120,7 +120,7 @@ const createTrackerTableLine = (trackers) => {
 
 		html.push('<td class="index">'+ (index + 1) +'</td>')
 		html.push('<td class="date">'+ element.date +'</td>')
-		html.push('<td class="product">'+ element.product +'</td>')
+		html.push('<td class="product"><select name="product" aria-label="Product">'+ options.product +'</select></td>')
 		html.push('<td class="title">'+ element.title +'</td>')
 		html.push('<td class="descr">'+ element.descr +'</td>')
 
@@ -201,10 +201,11 @@ const lineClassName = (tracker) => {
 		: 'primary'
 }
 
+// 新建按钮
 const createNewButton = () => {
 	if (permission.indexOf('add') === -1) return
 
-	$('#trackerTable').after('<div><button id="create" type="button" class="primary">+ new Bug Tracker</button></div>')
+	$('#trackerTable').after('<div class="buttonGroup"><button id="create" type="button" class="primary">+ new Bug Tracker</button></div>')
 
 	$('#create').click((event) => {
 		createTrackrForm('new', undefined)
@@ -214,20 +215,29 @@ const createNewButton = () => {
 // 创建表单（新增/编辑）
 const createTrackrForm = (operator = 'new', idx) => {
 	var html = []
-	html.push('<form">')
+
+	html.push('<form>')
 	html.push('<input id="seq" value="" type="hidden" aria-label="Sequence">')
 	html.push('<div><label for="index">序号</label><input id="index" value="" disabled></div>')
 	html.push('<div><label for="date">日期</label><input id="date" value="'+ getNowDate() +'" type="date"></div>')
 	html.push('<div><label for="product">产品</label><select id="product">'+ options.product +'</select></div>')
 	html.push('<div><label for="title">问题</label><input id="title" value=""></div>')
 	html.push('<div><label for="descr">描述</label><input id="descr" value=""></div>')
-	html.push('<div><label for="refer">参考</label><input id="refer" value="" type="file"></div>')
 	html.push('<div><label for="remark">备注</label><input id="remark" value=""></div>')
-	html.push('<div><label for="leader">负责</label><select id="leader">'+ options.leader +'</select></div>')
-	html.push('<div><label for="level">等级</label><select id="level">'+ options.level +'</select></div>')
-	html.push('<div><label for="status">状态</label><select id="status">'+ options.status +'</select></div>')
-	html.push('<div><label for="result">结果</label><select id="result">'+ options.result +'</select></div>')
+
 	html.push('<div>')
+	html.push('<label for="leader">负责</label><select id="leader">'+ options.leader +'</select>')
+	html.push('<label for="level">等级</label><select id="level">'+ options.level +'</select>')
+	html.push('<label for="status">状态</label><select id="status">'+ options.status +'</select>')
+	html.push('<label for="result">结果</label><select id="result">'+ options.result +'</select>')
+	html.push('</div>')
+
+	html.push('<div><label for="refer">参考</label><input id="refer" value="" type="file"></div>')
+	
+	// 分割线
+	html.push('<div class="divider"></div>')
+
+	html.push('<div class="buttonGroup">')
 	html.push('<button id="save" type="button" class="primary">保存</button>')
 	if (operator === 'edit' && permission.indexOf('del') !== -1) {
 		html.push('<button id="delete" type="button" class="danger">删除</button>')
