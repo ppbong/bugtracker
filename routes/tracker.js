@@ -23,30 +23,18 @@ router.get('/list', async function(req, res, next) {
   res.json(list)
 });
 
-router.get('/add', async function(req, res, next) {
+router.post('/add', async function(req, res, next) {
   let permission = req.session.permission
 
   if (permission.indexOf('add') === -1) {
     res.json({err:'没有添加权限'})
   } else {
-    let seq = await dbservice.getTrackerSequence()
-    // let date = new Date().toLocaleDateString()
-    let tracker = {
-      seq,
-      date: 'yyyy/mm/dd',
-      product: '',
-      title: '',
-      info: '',
-      refer: '',
-      leader: '',
-      level: '',
-      status: '',
-      result: '',
-      remark: ''
-    }
+    var tracker = req.body
+
+    tracker.seq = await dbservice.getTrackerSequence()
 
     let ret = await dbservice.addTracker(tracker)
-    if (ret === seq) {
+    if (ret === tracker.seq) {
       res.json(tracker)
     } else {
       res.json({err:'添加失败'})
@@ -54,22 +42,22 @@ router.get('/add', async function(req, res, next) {
   }
 });
 
-router.get('/update', async function(req, res, next) {
-  var tracker = req.query
+router.post('/update', async function(req, res, next) {
+  var tracker = req.body
   const seq = await dbservice.updTracker(tracker)
 
-  res.json({seq})
+  res.json(tracker)
 });
 
-router.get('/delete', async function(req, res, next) {
+router.post('/delete', async function(req, res, next) {
   let permission = req.session.permission
 
   if (permission.indexOf('del') === -1) {
     res.json({err:'没有删除权限'})
   } else {
-    let tracker = req.query
+    let tracker = req.body
     let seq = await dbservice.delTracker(tracker.seq)
-    res.json({seq})
+    res.json(seq)
   }
 });
 

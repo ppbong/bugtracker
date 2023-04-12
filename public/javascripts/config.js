@@ -1,4 +1,4 @@
-const supportPermission = ['add','del','edit','level','status','result','remark','config']
+const supportPermission = ['add','del','edit','leader','level','status','result','config']
 
 const createFieldSet = (id = 'product') => {
     var html = []

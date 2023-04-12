@@ -40,6 +40,7 @@ const user_data = `INSERT INTO user VALUES (?,?,?,?,?)`
 const user_query_one = `SELECT username,password,cname,permission,remark FROM user WHERE username=?`
 const user_query_all = `SELECT username,password,cname,permission,remark FROM user`
 const user_update = `UPDATE user SET password=?,cname=?,permission=?,remark=? WHERE username=?`
+const user_delete = `DELETE FROM user WHERE username=?`
 
 // 问题跟踪
 const tracker_schema = `CREATE TABLE IF NOT EXISTS tracker (
@@ -62,7 +63,7 @@ const tracker_query_all_default = tracker_query_all + ` ORDER BY seq`
 const tracker_query_all_bylevel = tracker_query_all + ` ORDER BY level DESC, seq ASC`
 const tracker_query_one = `SELECT seq,date,product,title,descr,refer,leader,level,status,result,remark FROM tracker WHERE seq=?`
 const tracker_insert = `INSERT INTO tracker VALUES (?,?,?,?,?,?,?,?,?,?,?)`
-const tracker_update = `UPDATE tracker SET date=?,product=?,title=?,descr=?,refer=?,leader=?level=?,status=?,result=?,remark=? WHERE seq=?`
+const tracker_update = `UPDATE tracker SET date=?,product=?,title=?,descr=?,refer=?,leader=?,level=?,status=?,result=?,remark=? WHERE seq=?`
 const tracker_delete = `DELETE FROM tracker WHERE seq=?`
 
 const initialized = function (dbfile) {
@@ -103,7 +104,7 @@ const initializing = function() {
 		db.run(user_schema)
 		stmt = db.prepare(user_data)
 		// username,password,cname,permission,remark
-		stmt.run('admin', '123456', 'admin', 'add|del|edit|level|status|result|remark|config', '')
+		stmt.run('admin', '123456', 'admin', 'add|del|edit|leader|level|status|result|config', '')
 		stmt.finalize()
 
 		db.run(tracker_schema)
@@ -187,23 +188,36 @@ const dbservice = {
 
 	setUser: (list) => {
 		return new Promise((resolve, reject) => {
-			list.forEach(e => {
-				db.get(user_query_one, e.username, (err, row) => {
-					if (err) throw err
+			var username = []
+			list.forEach((e) => {
+				username.push(e.username)
+			})
 
-					if (row === undefined) {
+			db.all(user_query_all, (err, rows) => {
+				rows.forEach(e => {
+					let idx = username.indexOf(e.username)
+					if (idx === -1) {
+						stmt = db.prepare(user_delete)
+						stmt.run(e.username)
+						stmt.finalize()
+					} else {
+						list[idx].exists = true
+						if (list[idx].password === '******') {
+							list[idx].password = e.password
+						}
+					}
+				})
+
+				list.forEach(e => {
+					if (e.exists) {
+						stmt = db.prepare(user_update)
+						// password,cname,permission,remark,username
+						stmt.run(e.password, e.cname, e.permission, e.remark, e.username)
+						stmt.finalize()
+					} else {
 						stmt = db.prepare(user_data)
 						// username,password,cname,permission,remark
 						stmt.run(e.username, e.password, e.cname, e.permission, e.remark)
-						stmt.finalize()
-					} else {
-						stmt = db.prepare(user_update)
-						// password,cname,permission,remark,username
-						if (e.password === '******') {
-							stmt.run(row.password, e.cname, e.permission, e.remark, e.username)
-						} else {
-							stmt.run(e.password, e.cname, e.permission, e.remark, e.username)
-						}
 						stmt.finalize()
 					}
 				})
