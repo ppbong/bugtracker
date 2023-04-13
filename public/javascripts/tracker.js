@@ -226,7 +226,7 @@ const lineClassName = (tracker) => {
 const createNewButton = () => {
 	if (permission.indexOf('add') === -1) return
 
-	$('#trackerTable').after('<div class="buttonGroup"><button id="create" type="button" class="primary">+ new Bug Tracker</button></div>')
+	$('#app').after('<div class="buttonGroup"><button id="create" type="button" class="primary">+ new Bug Tracker</button></div>')
 
 	$('#create').click((event) => {
 		createTrackrForm('new', undefined)
@@ -235,6 +235,8 @@ const createNewButton = () => {
 
 // 创建表单（新增/编辑）
 const createTrackrForm = (operator = 'new', idx) => {
+	filesOrigin = filesDelete = filesUpload = []
+
 	var html = []
 
 	html.push('<form>')
@@ -306,8 +308,6 @@ const createTrackrForm = (operator = 'new', idx) => {
 		})
 
 		filesOrigin = tracker.refer === '' ? [] : tracker.refer.split('|')
-		filesDelete = []
-		filesUpload = []
 
 		// 添加原有参考文件显示
 		createReferList(filesOrigin, false)
