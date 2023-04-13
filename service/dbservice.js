@@ -89,13 +89,18 @@ const initializing = function() {
 		// type,value,label,remark
 		stmt.run('product', 'admin', '平台', '')
 		stmt.run('product', 'agent', '代理', '')
+
 		stmt.run('level', 'low', '低', '')
 		stmt.run('level', 'medium', '中', '')
 		stmt.run('level', 'high', '高', '')
+
+		stmt.run('status', 'ready', '待安排', '')
+		stmt.run('status', 'develop', '待开发', '')
 		stmt.run('status', 'fix', '待排查', '')
 		stmt.run('status', 'cover', '待修复', '')
 		stmt.run('status', 'resolved', '已处理', '')
 		stmt.run('status', 'rejected', '不处理', '')
+
 		stmt.run('result', 'open', '待复核', '')
 		stmt.run('result', 'done', '已完成', '')
 		stmt.run('result', 'close', '已关闭', '')
@@ -104,7 +109,7 @@ const initializing = function() {
 		db.run(user_schema)
 		stmt = db.prepare(user_data)
 		// username,password,cname,permission,remark
-		stmt.run('admin', '123456', 'admin', 'add|del|edit|leader|level|status|result|config', '')
+		stmt.run('admin', '123456', 'admin', 'add|del|edit|leader|level|status|result|config', '超级管理员')
 		stmt.finalize()
 
 		db.run(tracker_schema)

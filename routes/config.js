@@ -18,7 +18,7 @@ const accessEnable = async (username) => {
 router.get('/', async function(req, res, next) {
     const enable = await accessEnable(req.session.user);
     if (enable) {
-        res.render('config', {title: '系统设置'});
+        res.render('config', {title: '系统参数设置'});
     } else {
         res.redirect('/login')
     }

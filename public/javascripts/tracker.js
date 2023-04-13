@@ -1,6 +1,15 @@
+// 数据
 var trackerList = []
+// 权限
 var permission = []
+// 数据字典
 var options = {}
+// 原始文件
+var filesOrigin = []
+// 上传文件
+var filesUpload = []
+// 删除文件
+var filesDelete = []
 
 const _getOptions = (name) => {
 	return new Promise((resolve, reject) => {
@@ -94,6 +103,13 @@ const getNowDate = () => {
 	return dateFormat(new Date()).replaceAll('/','-')
 }
 
+// 创建导航链接
+const createNavLink = () => {
+	if (-1 === permission.indexOf('config')) return;
+
+	$('div.nav').append('<a href="/config">系统参数设置</a>')
+}
+
 // 创建表格
 const createTrackerTable = () => {
 	const th = ['序号','日期','产品','问题','描述','参考','备注','负责','等级','状态','结果']
@@ -128,10 +144,10 @@ const createTrackerTableLine = (trackers) => {
 		if ( element.refer === undefined || element.refer === '') {
 			html.push('<td class="refer"></td>')
 		} else {
-			let referFile = element.refer.split('|')
+			var files = element.refer.split('|')
 			html.push('<td class="refer">')
-			referFile.forEach((e,idx) => {
-				html.push('<a href="' + element.seq + '/' + e + '" target="_blank">' + (idx+1) + '</a>')
+			files.forEach((e,idx) => {
+				html.push('<a href="files/' + element.seq + '/' + e + '" target="_blank">' + (idx+1) + '</a>')
 			})
 			html.push('</td>')
 		}
@@ -289,19 +305,13 @@ const createTrackrForm = (operator = 'new', idx) => {
 			e.selected = e.value === tracker.result ? true : false
 		})
 
+		filesOrigin = tracker.refer === '' ? [] : tracker.refer.split('|')
+		filesDelete = []
+		filesUpload = []
+
 		// 添加原有参考文件显示
-		createReferList(tracker.refer, false)
+		createReferList(filesOrigin, false)
 	}
-
-	$('#refer').change(event => {
-		console.log(event.target.files)
-
-		let fileNames = []
-		for (const file of event.target.files) fileNames.push(file.name)
-
-		// 添加新增参考文件显示
-		createReferList(fileNames.join('|'), true)
-	})
 
 	$('#save').click((event) => {
 		// event.preventDefault()
@@ -311,7 +321,7 @@ const createTrackrForm = (operator = 'new', idx) => {
 			product: $('#product').val(),
 			title: $('#title').val(),
 			descr: $('#descr').val(),
-			refer: $('#refer').val(),
+			refer: [...filesOrigin,...filesUpload].join('|'),
 			remark: $('#remark').val(),
 			leader: $('#leader').val(),
 			level: $('#level').val(),
@@ -337,9 +347,11 @@ const createTrackrForm = (operator = 'new', idx) => {
 				trackerList[idx].result = data.result
 			}
 
-			// 重新渲染表格（序号连续性）
-			createTrackerTable()
-			createTrackerTableLine(trackerList)
+			uploadFile($('#refer')[0].files, data.seq).then(() => {
+				// 重新渲染表格（序号连续性）
+				createTrackerTable()
+				createTrackerTableLine(trackerList)
+			})
 
 			// 可仅更新或追加行提高性能
 		}).catch(err => {
@@ -370,44 +382,74 @@ const createTrackrForm = (operator = 'new', idx) => {
 		// event.preventDefault()
 		$('#trackerForm').remove()
 	})
+
+	$('#refer').change(event => {
+		console.log(event.target.files)
+
+		filesUpload = []
+		for (const file of event.target.files) filesUpload.push(file.name)
+
+		// 添加新增参考文件显示
+		createReferList(filesUpload, true)
+	})
 }
 
 // 表单中参考文件列表（原有、新增）
-const createReferList = (fileList = '', isFromInput = false) => {
-	if (fileList === '') return
-
+const createReferList = (fileList = [], isFromInput = false) => {
 	const className = isFromInput ? 'newFile' : 'oldFile'
-	const fileNames = fileList.split('|')
-	fileNames.forEach(element => {
+	
+	$('.' + className).remove() // 避免重复项
+	
+	fileList.forEach(element => {
 		$('<div class="'+ className +'"><label>'+ element +'</label><button class="small danger">-</button></div>')
 		.find('button').click(event => {
 			$(event.target.parentNode).remove()
+			if (event.target.parentNode.className === 'newFile') {
+				let idx = filesUpload.indexOf(element)
+				filesUpload.splice(idx, 1)
+			} else {
+				let idx = filesOrigin.indexOf(element)
+				filesOrigin.splice(idx, 1)
+				filesDelete.push(element)
+			}
 		}).end()
 		.appendTo($('.referList'))
 	})
 }
 
 // 文件上传
-const uploadFile = (files) => { // event.target.files
-	var forms = new FormData()
-	forms.append('file', files[0])
+const uploadFile = (files, seq) => { // event.target.files
+	return new Promise((resolve, reject) => {
+		// 删除文件
+		if (filesDelete.length > 0) {
+			axios.post('/tracker/files/remove/' + seq, filesDelete).then(res => {
+				console.log(res)
+				if (res.err) reject(res.err)
+			})
+		}
 
-	var opt = {headers: {'Content-Type': 'multipart/form-data'}}
-	axios.post('', forms, opt)
+		const opt = { headers: {'Content-Type':'multipart/form-data'} }
+		for(const file of files) {
+			if (filesUpload.indexOf(file.name) === -1) continue
+
+			let forms = new FormData()
+			forms.append('refer', file)
+			axios.post('/tracker/files/upload/' + seq, forms, opt).then(res => {
+				console.log(res)
+				if (res.err) reject(res.err)
+			})
+		}
+
+		resolve('done')
+	})
 }
 
 window.onload = async () => {
 	await getOptions()
 	await getPermission()
 	await getTrackerList()
-	config()
+	createNavLink()
 	createTrackerTable()
 	createTrackerTableLine(trackerList)
 	createNewButton()
-}
-
-const config = () => {
-	if (-1 === permission.indexOf('config')) return;
-
-	$('div.nav').append('<a href="/config">数据字典</a>')
 }

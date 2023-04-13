@@ -17,12 +17,20 @@ router.post('/', async function(req, res, next) {
 
 	if (user && user.password === password) {
 		req.session.user = username
-		req.session.success = '登录成功'
+		req.session.error = ''
 		res.redirect('/tracker')
 	} else {
+		req.session.user = ''
 		req.session.error = '登录失败:用户名或密码错误'
 		res.redirect('/login')
 	}
 });
+
+router.get('/logout', function(req, res, next) {
+	req.session.user = ''
+	req.session.error = ''
+
+	res.redirect('/login')
+})
 
 module.exports = router;

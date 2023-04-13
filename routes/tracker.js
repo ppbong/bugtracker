@@ -1,7 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
-const dbservice = require('../service/dbservice.js')
+const fs = require('fs')
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
+
+const dbservice = require('../service/dbservice.js');
 
 // tracker
 router.get('/', async function(req, res, next) {
@@ -12,7 +16,7 @@ router.get('/', async function(req, res, next) {
     req.session.permission = user.permission.split('|')
     res.render('tracker', { title: '问题跟踪', username })
   } else {
-    req.session.error = '操作超时，请重新登录'
+    req.session.error = ''
     res.redirect('/login')
   }
 });
@@ -57,8 +61,46 @@ router.post('/delete', async function(req, res, next) {
   } else {
     let tracker = req.body
     let seq = await dbservice.delTracker(tracker.seq)
+
     res.json(seq)
   }
+});
+
+router.post('/files/remove/:seq', function(req, res, next) {
+  // 流水号
+  let seq = req.params.seq
+  let files = req.body
+
+  let fileSavePath = 'public/files/' + seq
+
+  files.forEach((e) => {
+    fs.rm(fileSavePath + '/' + e, (err) => {})
+  })
+
+  res.send('删除成功')
+});
+
+router.post('/files/upload/:seq', upload.single('refer'), function(req, res, next) {
+  // 流水号
+  let seq = req.params.seq
+  let file = req.file
+
+  let fileSavePath = 'public/files/' + seq
+  fs.mkdirSync(fileSavePath, {recursive: true})
+  
+  let filename = fileSavePath + '/' + file.originalname
+
+  fs.readFile(file.path, function (err, data) {
+    fs.writeFile(filename, data, function (err) {
+      fs.rm(file.path, (err) => {})
+      if (err) {
+        res.json({err: '上传失败'})
+      } else {
+        res.send(file.originalname + '上传成功')
+      }
+    })
+  })
+
 });
 
 module.exports = router;

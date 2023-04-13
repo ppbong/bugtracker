@@ -85,7 +85,13 @@ const prepareConfig = () => {
         appendTableData2('permission', res.data)
     })
 
-    $('#app').append('<div><button class="save primary" name="save">保存</button></div>')
+    var html = []
+    html.push('<div>')
+    html.push('<button class="save primary" name="save">保存</button>')
+    html.push('<button class="back info" name="back">返回</button>')
+    html.push('</div>')
+
+    $('#app').append(html.join(''))
 }
 
 const styleAdjust = () => {
@@ -96,7 +102,12 @@ const styleAdjust = () => {
 
     $('#app').find('.save').css({
         padding: '2px 45px',
-    }).parent().css({
+    }).end()
+    .find('.back').css({
+        padding: '2px 45px',
+        marginLeft: '5px',
+    })
+    .parent().css({
         width: '100%',
         textAlign: 'center',
     })
@@ -200,6 +211,8 @@ const addEventListen = () => {
             axios.post('/config/save', data).then(res => {
                 alert(res.data)
             })
+        } else if (event.target.name === 'back') {
+            location.href = '/tracker'
         } else {
             console.log('unknown button event')
         }

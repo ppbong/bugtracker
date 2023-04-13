@@ -160,6 +160,8 @@ div.divider {
 div.newFile,div.oldFile {
 	display: inline;
 	border-radius: 2px;
+	padding: 2px;
+	margin-right: 5px;
 }
 
 div.newFile {
