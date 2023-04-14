@@ -237,7 +237,9 @@ const createNewButton = () => {
 
 // 创建表单（新增/编辑）
 const createTrackrForm = (operator = 'new', idx) => {
-	filesOrigin = filesDelete = filesUpload = []
+	filesOrigin = []
+	filesDelete = []
+	filesUpload = []
 
 	var html = []
 

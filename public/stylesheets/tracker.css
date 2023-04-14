@@ -99,7 +99,7 @@ tr.info {
 	color: white;
 }
 
-.warn, .medium {
+.warn, .develop, .medium {
 	background-color: #E6A23C;
 	color: white;
 }
