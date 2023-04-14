@@ -28,11 +28,11 @@ table {
 
 thead {
 	color: #606266;
-	border-bottom: 1px solid #606266;
 }
 
 th,td {
 	padding: 5px 2px;
+	border-bottom: 1px solid #777;
 }
 
 tbody tr:hover {
@@ -89,7 +89,7 @@ tr.info {
 	/* background-color: #f4f4f5; */
 }
 
-.primary, .low {
+.primary, .ready, .low {
 	background-color: #409EFF;
 	color: white;
 }
@@ -129,9 +129,18 @@ td.date {
 td.product {
 	width: 100px;
 }
+
 td.product select:disabled {
 	color: #333;
 	opacity: 1;
+}
+
+td.title {
+	width: 200px;
+}
+
+td.remark {
+	width: 100px;
 }
 
 td.leader {

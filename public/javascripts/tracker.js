@@ -152,7 +152,8 @@ const createTrackerTableLine = (trackers) => {
 			html.push('</td>')
 		}
 		
-		html.push('<td class="remark">'+ element.remark +'</td>')
+		html.push('<td class="remark" title="'+ element.remark +'">'+ element.remark.substring(0,6) +' ...</td>')
+
 		html.push('<td class="leader"><select name="leader" aria-label="Leader">'+ options.leader +'</select></td>')
 		html.push('<td class="level"><select name="level" class="'+ element.level +'" aria-label="Level">'+ options.level +'</select></td>')
 		html.push('<td class="status"><select name="status" class="'+ element.status +'" aria-label="Status">'+ options.status +'</select></td>')
@@ -217,9 +218,10 @@ const createTrackerTableLine = (trackers) => {
 const lineClassName = (tracker) => {
 	return tracker.result === 'done' ? 'success'
 		: tracker.result === 'close' ? 'info'
-		: tracker.level === 'high' ? 'danger'
-		: tracker.level === 'medium' ? 'warn'
-		: 'primary'
+		: ''
+		// : tracker.level === 'high' ? 'danger'
+		// : tracker.level === 'medium' ? 'warn'
+		// : 'primary'
 }
 
 // 新建按钮
