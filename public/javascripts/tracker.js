@@ -110,6 +110,22 @@ const createNavLink = () => {
 	$('div.nav').append('<a href="/config">系统参数设置</a>')
 }
 
+// 创建过滤按钮
+const createNavFilter = () => {
+	var html = []
+	html.push('<div style="display: inline-block; margin-left: 15px;">')
+	html.push('<input id="filter" type="checkbox" name="filter">')
+	html.push('<label for="filter">仅显示未解决的问题</label>')
+	html.push('</div>')
+
+	$('div.nav').append(html.join(''))
+
+	$('#filter').change((event) => {
+		createTrackerTable()
+		createTrackerTableLine(trackerList)
+	})
+}
+
 // 创建表格
 const createTrackerTable = () => {
 	const th = ['序号','日期','产品','问题','描述','参考','备注','负责','等级','状态','结果']
@@ -132,6 +148,12 @@ const createTrackerTable = () => {
 // 创建表格行数据
 const createTrackerTableLine = (trackers) => {
 	trackers.forEach((element,index) => {
+		var checked = $('#filter').is(':checked')
+
+		if (checked && element.status === 'resolved' && (element.result === 'done' || element.result === 'close')) {
+			return
+		}
+
 		var html = []
 
 		html.push('<td class="index">'+ (index + 1) +'</td>')
@@ -453,6 +475,7 @@ window.onload = async () => {
 	await getPermission()
 	await getTrackerList()
 	createNavLink()
+	createNavFilter()
 	createTrackerTable()
 	createTrackerTableLine(trackerList)
 	createNewButton()
