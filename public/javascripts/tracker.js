@@ -114,16 +114,18 @@ const createNavLink = () => {
 const createNavFilter = () => {
 	var html = []
 	html.push('<div style="display: inline-block; margin-left: 15px;">')
-	html.push('<input id="filter" type="checkbox" name="filter">')
-	html.push('<label for="filter">仅显示未解决的问题</label>')
+	html.push('<input id="filterResult" type="checkbox" name="filterResult" class="filter">')
+	html.push('<label for="filterResult">不显示已完成或已关闭</label>')
+	html.push('<input id="filterStatus" type="checkbox" name="filterStatus" class="filter">')
+	html.push('<label for="filterStatus">不显示已处理</label>')
 	html.push('</div>')
 
 	$('div.nav').append(html.join(''))
 
-	$('#filter').change((event) => {
+	$('.filter').change((event) => {
 		createTrackerTable()
 		createTrackerTableLine(trackerList)
-	})
+	}).css('margin-left', '15px')
 }
 
 // 创建表格
@@ -148,11 +150,11 @@ const createTrackerTable = () => {
 // 创建表格行数据
 const createTrackerTableLine = (trackers) => {
 	trackers.forEach((element,index) => {
-		var checked = $('#filter').is(':checked')
+		var checkedResult = $('#filterResult').is(':checked')
+		var checkedStatus = $('#filterStatus').is(':checked')
 
-		if (checked && element.status === 'resolved' && (element.result === 'done' || element.result === 'close')) {
-			return
-		}
+		if (checkedResult && (element.result === 'done' || element.result === 'close')) return
+		if (checkedStatus && element.status === 'resolved') return
 
 		var html = []
 
